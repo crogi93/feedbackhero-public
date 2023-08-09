@@ -6,9 +6,13 @@ from rest_framework.request import HttpRequest
 from rest_framework.views import APIView
 
 from core.models import Board, Comment, Status, Suggestion, Vote
-from core.serializers import (BoardSerializer, CommentSerializer,
-                              StatusSerializer, SuggestionSerializer,
-                              VoteSerializer)
+from core.serializers import (
+    BoardSerializer,
+    CommentSerializer,
+    StatusSerializer,
+    SuggestionSerializer,
+    VoteSerializer,
+)
 from core.viewsets import DetailView, ListView
 
 
@@ -16,58 +20,69 @@ class BoardListView(ListView):
     object_class = Board
     serializer_class = BoardSerializer
 
+
 class BoardDetailView(DetailView):
     object_class = Board
     serializer_class = BoardSerializer
+
 
 class StatusListView(ListView):
     object_class = Status
     serializer_class = StatusSerializer
 
+
 class StatusDetailView(DetailView):
     object_class = Status
     serializer_class = StatusSerializer
+
 
 class SuggestionListView(ListView):
     object_class = Suggestion
     serializer_class = SuggestionSerializer
 
+
 class SuggestionDetailView(DetailView):
     object_class = Suggestion
     serializer_class = SuggestionSerializer
+
 
 class CommentListView(APIView):
     def get(self, request: HttpRequest, id: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         comments = Comment.objects.filter(suggestion=suggestion)
         serializer = CommentSerializer(comments, many=True)
-        return JsonResponse({'data': serializer.data})
+        return JsonResponse({"data": serializer.data})
 
     def post(self, request: HttpRequest, id: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         serializer = CommentSerializer(data=request.data)
         if not serializer.is_valid():
-            return JsonResponse({'data': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(
+                {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         comment = serializer.save(suggestion=suggestion)
-        return JsonResponse({'data': CommentSerializer(comment).data})
+        return JsonResponse({"data": CommentSerializer(comment).data})
+
 
 class CommentDetailView(APIView):
     def get(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         comment = get_object_or_404(Comment, suggestion=suggestion, id=cid)
         serializer = CommentSerializer(comment)
-        return JsonResponse({'data': serializer.data})
+        return JsonResponse({"data": serializer.data})
 
     def put(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         comment = get_object_or_404(Comment, suggestion=suggestion, id=cid)
         serializer = CommentSerializer(comment, data=request.data)
         if not serializer.is_valid():
-            return JsonResponse({'data': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(
+                {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         comment = serializer.save()
-        return JsonResponse({'data': CommentSerializer(comment).data})
+        return JsonResponse({"data": CommentSerializer(comment).data})
 
     def delete(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
@@ -75,38 +90,44 @@ class CommentDetailView(APIView):
         comment.delete()
         return JsonResponse({}, status=status.HTTP_204_NO_CONTENT, safe=False)
 
+
 class VoteListView(APIView):
     def get(self, request: HttpRequest, id: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         votes = Vote.objects.filter(suggestion=suggestion)
         serializer = VoteSerializer(votes, many=True)
-        return JsonResponse({'data': serializer.data})
+        return JsonResponse({"data": serializer.data})
 
     def post(self, request: HttpRequest, id: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         serializer = VoteSerializer(data=request.data)
         if not serializer.is_valid():
-            return JsonResponse({'data': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(
+                {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         vote = serializer.save(suggestion=suggestion)
-        return JsonResponse({'data': VoteSerializer(vote).data})
+        return JsonResponse({"data": VoteSerializer(vote).data})
+
 
 class VoteDetailView(APIView):
     def get(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         vote = get_object_or_404(Vote, suggestion=suggestion, id=cid)
         serializer = VoteSerializer(vote)
-        return JsonResponse({'data': serializer.data})
+        return JsonResponse({"data": serializer.data})
 
     def put(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         vote = get_object_or_404(Vote, suggestion=suggestion, id=cid)
         serializer = VoteSerializer(vote, data=request.data)
         if not serializer.is_valid():
-            return JsonResponse({'data': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(
+                {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         vote = serializer.save()
-        return JsonResponse({'data': VoteSerializer(vote).data})
+        return JsonResponse({"data": VoteSerializer(vote).data})
 
     def delete(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
