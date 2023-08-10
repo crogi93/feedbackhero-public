@@ -17,13 +17,43 @@ from core.viewsets import DetailView, ListView
 
 
 class BoardListView(ListView):
-    object_class = Board
-    serializer_class = BoardSerializer
+    def get(self, request: HttpRequest) -> JsonResponse:
+        objects = Board.objects.all()
+        serializer = BoardSerializer(objects, many=True)
+        return JsonResponse({"data": serializer.data})
+
+    def post(self, request: HttpRequest) -> JsonResponse:
+        serializer = BoardSerializer(data=request.data)
+        if not serializer.is_valid():
+            return JsonResponse(
+                {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        object = serializer.save()
+        return JsonResponse({"data": BoardSerializer(object).data})
 
 
 class BoardDetailView(DetailView):
-    object_class = Board
-    serializer_class = BoardSerializer
+    def get(self, request: HttpRequest, id: int) -> JsonResponse:
+        object = get_object_or_404(Board, id=id)
+        serializer = BoardSerializer(object)
+        return JsonResponse({"data": serializer.data})
+
+    def put(self, request: HttpRequest, id: int) -> JsonResponse:
+        object = get_object_or_404(Board, id=id)
+        serializer = BoardSerializer(object, data=request.data)
+        if not serializer.is_valid():
+            return JsonResponse(
+                {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        object = serializer.save()
+        return JsonResponse({"data": BoardSerializer(object).data})
+
+    def delete(self, request: HttpRequest, id: int) -> JsonResponse:
+        object = get_object_or_404(Board, id=id)
+        object.delete()
+        return JsonResponse({}, status=status.HTTP_204_NO_CONTENT, safe=False)
 
 
 class StatusListView(ListView):

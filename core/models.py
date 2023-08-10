@@ -16,7 +16,7 @@ class TimestampMixin(models.Model):
 def upload_path(instance, filename):
     klass = type(instance).__name__
     *_, ext = os.path.splitext(filename)
-    return "images/{0}_{1}.{2}".format(klass, uuid.uuid4(), ext)
+    return "images/{0}_{1}{2}".format(klass, uuid.uuid4(), ext)
 
 
 class Board(TimestampMixin):
@@ -28,6 +28,10 @@ class Board(TimestampMixin):
 class Status(TimestampMixin):
     name = models.CharField(max_length=255, unique=True)
     board = models.ForeignKey(Board, related_name="status", on_delete=models.DO_NOTHING)
+
+    @property
+    def full_name(self):
+        return self.id + self.name
 
 
 class Suggestion(TimestampMixin):
