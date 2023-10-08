@@ -4,13 +4,22 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
+from datetime import datetime
+
 
 class TimestampMixin(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         abstract = True
+
+    def is_deleted(self) -> bool:
+        return self.deleted_at
+
+    def set_deleted(self) -> None:
+        self.deleted_at = datetime.now()
 
 
 def upload_path(instance, filename):
@@ -30,7 +39,7 @@ class Status(TimestampMixin):
     board = models.ForeignKey(Board, related_name="status", on_delete=models.DO_NOTHING)
 
     @property
-    def full_name(self):
+    def full_name(self) -> str:
         return self.id + self.name
 
 
@@ -39,11 +48,6 @@ class Suggestion(TimestampMixin):
     title = models.CharField(max_length=255, unique=True)
     description = models.TextField(max_length=1000, blank=True, default="")
     image = models.FileField(upload_to=upload_path, blank=True, null=True)
-    author_name = models.CharField(max_length=255)
-    author_email = models.EmailField()
-    author_id = models.ForeignKey(
-        User, on_delete=models.DO_NOTHING, blank=True, null=True
-    )
     status = models.ForeignKey(
         Status, on_delete=models.DO_NOTHING, blank=True, null=True
     )
@@ -51,11 +55,6 @@ class Suggestion(TimestampMixin):
 
 class Comment(TimestampMixin):
     body = models.TextField(max_length=1000, blank=True, default="")
-    author_name = models.CharField(max_length=255)
-    author_email = models.EmailField()
-    author_id = models.ForeignKey(
-        User, on_delete=models.DO_NOTHING, blank=True, null=True
-    )
     suggestion = models.ForeignKey(
         Suggestion, related_name="comments", on_delete=models.DO_NOTHING
     )
