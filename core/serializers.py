@@ -14,6 +14,7 @@ class BaseSerializer(serializers.ModelSerializer):
 class StatusSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = Status
+        read_only_fields = BaseSerializer.Meta.read_only_fields + ["board"]
 
 
 class BoardSerializer(BaseSerializer):
@@ -24,13 +25,16 @@ class BoardSerializer(BaseSerializer):
 class SuggestionSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = Suggestion
+        read_only_fields = BaseSerializer.Meta.read_only_fields + ["board"]
 
 
 class CommentSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = Comment
+        read_only_fields = BaseSerializer.Meta.read_only_fields + ["suggestion"]
 
 
 class VoteSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = Vote
+        read_only_fields = BaseSerializer.Meta.read_only_fields + ["suggestion"]

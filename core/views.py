@@ -147,18 +147,6 @@ class VoteDetailView(APIView):
         serializer = VoteSerializer(vote)
         return JsonResponse({"data": serializer.data})
 
-    def put(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
-        suggestion = get_object_or_404(Suggestion, id=id)
-        vote = get_object_or_404(Vote, suggestion=suggestion, id=cid)
-        serializer = VoteSerializer(vote, data=request.data)
-        if not serializer.is_valid():
-            return JsonResponse(
-                {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        vote = serializer.save()
-        return JsonResponse({"data": VoteSerializer(vote).data})
-
     def delete(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         vote = get_object_or_404(Vote, suggestion=suggestion, id=cid)
