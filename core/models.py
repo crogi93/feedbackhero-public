@@ -33,6 +33,10 @@ class Board(TimestampMixin):
     logo = models.FileField(upload_to=upload_path, blank=True, null=True)
     description = models.TextField()
 
+    @property
+    def thumbnail(self):
+        return self.logo
+
 
 class Status(TimestampMixin):
     name = models.CharField(max_length=255, unique=True)
@@ -51,6 +55,10 @@ class Suggestion(TimestampMixin):
     status = models.ForeignKey(
         Status, on_delete=models.DO_NOTHING, blank=True, null=True
     )
+
+    @property
+    def thumbnail(self):
+        return self.image
 
 
 class Comment(TimestampMixin):

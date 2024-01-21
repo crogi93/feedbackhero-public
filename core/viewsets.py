@@ -37,7 +37,7 @@ class DetailView(APIView):
     def put(self, request: HttpRequest, bid: int, id: int) -> JsonResponse:
         board = get_object_or_404(Board, id=bid)
         object = get_object_or_404(self.object_class, board=board, id=id)
-        serializer = self.serializer_class(object, data=request.data)
+        serializer = self.serializer_class(object, data=request.data, partial=True)
         if not serializer.is_valid():
             return JsonResponse(
                 {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST

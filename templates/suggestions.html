@@ -1,0 +1,54 @@
+{% for suggestion in suggestions %}
+<div class="box">
+  <nav class="level is-mobile">
+    <div class="level-left">
+      <div class="level-item">
+        <a href="{% url 'suggestionsdetailview'  id=suggestion.id %}"><h4 id="const" class="title is-3" style="font-family: Montserrat">{{ suggestion.title }}</h4></a>
+      </div>
+      <div class="level-item has-text-centered">
+        <div>
+          <button class="button is-rounded is-static">{{ suggestion.status.name }}</button>
+        </div>
+      </div>
+    </div>
+    <div class="level-right">
+      <div class="level-item has-text-centered">
+        <div>
+          <a href={% url 'suggestionsdetailview'  id=suggestion.id %} class="button is-success">
+            <span class="icon">
+              <i class="fa-solid fa-thumbs-up"></i>
+            </span>
+            <span>Vote up!</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="columns is-vcentered">
+    <div class="column is-2">
+      <div class="container">
+        <div>
+          <center>
+          <p class="heading">Votes</p>
+          <p class="title is-1">{{ suggestion.sum_votes }}</p>
+          </center>
+        </div>
+      </div>
+    </div>
+    <div class="column">
+      <article class="message">
+        <div class="message-header">
+          <p>@JohnSmith</p>
+          {{ suggestion.created_at }}
+        </div>
+        <div class="message-body" >
+          {{ suggestion.description }}
+        <a href="{% url 'suggestionsdetailview'  id=suggestion.id %}">
+          <p align="right">{{ suggestion.sum_comments }} comments</p>
+        </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>
+{% endfor %}

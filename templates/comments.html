@@ -1,0 +1,31 @@
+<div class="box">
+  <nav class="level">
+    <div class="level-left">
+      <div class="level-item">
+        {% if not comments %}
+          <h3 class="title is-3">There is no comments.</h3>
+        {% else %}
+          <h3 class="title is-3">All comments.</h3>
+        {% endif %}
+      </div>
+    </div>
+    <div class="level-right">
+      <div class="level-item">
+        <form action="{% url 'suggestionscreateview' %}"><button class="button is-primary is-block is-alt is-large">New Comment</buton></form>
+      </div>
+    </div>
+  </nav>
+  {% if comments %}
+    {% for comment in comments %}
+      <article class="message">
+        <div class="message-header">
+          <p>@JohnSmith</p>
+          {{ comment.created_at }}
+        </div>
+        <div class="message-body" >
+          {{ comment.body }}
+        </div>
+      </article>
+    {% endfor %}
+  {% endif %}
+</div>

@@ -1,0 +1,71 @@
+{% extends "base_board_view.html" %}
+{% load static %}
+
+{% block title %}Feedbackhero - {{ board.name }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    {% include "notifications.html" %}
+    <div class="columns">
+      <div class="column is-3">
+        <aside class="is-medium menu">
+          <a class="button is-primary is-block is-alt is-large" href="{% url 'suggestionscreateview' %}">New Suggestion</a>
+          <p class="menu-label">SEARCH</p>
+          <form action="{% url 'suggestionslistview' %}" method="GET">
+            <div class="field has-addons">
+              <div class="control is-expanded">
+                <input class="input" type="text" placeholder="Find a suggestion..." name="title">
+              </div>
+              <div class="control">
+                <button class="button is-info" type="submit">
+                  Search
+                </button>
+              </div>
+            </div>
+          </form>
+          <p class="menu-label">ORDER BY</p>
+          <ul class="menu-list">
+            <li>
+              <button class="button">
+              <span class="icon">
+                <i class="fa-solid fa-star"></i>
+              </span>
+              <span>Top rated</span>
+            </button>
+            </li>
+            <li>
+              <button class="button">
+              <span class="icon">
+                <i class="fa-solid fa-clock"></i>
+              </span>
+              <span>Last updated</span>
+            </button>
+            </li>
+          </ul>
+          <p class="menu-label">Filtr by STATUS</p>
+          <ul class="menu-list">
+              <li><a href="{% url 'suggestionslistview' %}">All ({{ suggestions_count }})</a></li>
+              {% for status in statuses %}
+              <li><a href="{{ request.get_path }}?status__name={{ status.name }}">{{ status.name }} ({{ status.sum_suggestions }})</a></li>
+              {% endfor %}
+          </ul>
+        </aside>
+      </div>
+      <div class="column is-9">
+        <div class="content is-medium">
+          {% if not suggestions %}
+          <h3 class="title is-3">There is no feedbacks.</h3>
+          {% else %}
+          <h3 class="title is-3">Feedbacks</h3>
+          {% include "suggestions.html" %}
+          {% include "pagination.html" with objects=suggestions %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/scripts.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,25 @@
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+  {% if objects.has_previous %}
+  <a href="{{ request.path }}?page={{ objects.previous_page_number }}" class="pagination-previous">Previous page</a>
+  {% endif %}
+  {% if objects.has_next %}
+  <a href="{{ request.path }}?page={{ objects.next_page_number }}" class="pagination-next">Next page</a>
+  {% endif %}
+  <ul class="pagination-list">
+    {% if objects.has_previous %}
+    <li><a href="{{ request.path }}?page=1" class="pagination-link" aria-label="Goto page 1">1</a></li>
+    {% endif %}
+    {% if objects.has_previous and objects.number > 2 %}
+    <li><span class="pagination-ellipsis">&hellip;</span></li>
+    <li><a href="{{ request.path }}?page={{ objects.previous_page_number }}" class="pagination-link" aria-label="Goto page {{ objects.previous_page_number }}">{{ objects.previous_page_number }}</a></li>
+    {% endif %}
+    <li><a class="pagination-link is-current" aria-label="Page {{ objects.number }}" aria-current="page">{{ objects.number }}</a></li>
+    {% if objects.has_next %}
+    <li><a href="{{ request.path }}?page={{ objects.next_page_number }}" class="pagination-link" aria-label="Goto page {{ objects.next_page_number }}">{{ objects.next_page_number }}</a></li>
+    {% endif %}
+    {% if objects.has_next and objects.number|add:2 <= objects.paginator.num_pages %}
+    <li><span class="pagination-ellipsis">&hellip;</span></li>
+    <li><a href="{{ request.path }}?page={{ objects.paginator.num_pages }}" class="pagination-link" aria-label="Goto last page">{{ objects.paginator.num_pages }}</a></li>
+    {% endif %}
+  </ul>
+</nav>

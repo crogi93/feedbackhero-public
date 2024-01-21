@@ -1,0 +1,58 @@
+{% extends "base_board_view.html" %}
+{% load static %}
+
+{% block title %}Feedbackhero - {{ board.name }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    {% include "notifications.html" %}
+    <a href="{% url 'suggestionslistview' %}"><h3 class="title is-4">Back to suggestion list.</h3></a>
+    <br>
+    <div class="box">
+      <div class="columns">
+        <div class="column is-half is-offset-one-quarter">
+          <center>
+            <p class="heading">Votes</p>
+            <h1 class="title">{{ suggestion.sum_votes }}</h1>
+            <form action="{% url 'voteupsuggestion' id=suggestion.id %}">
+              <button class="button is-primary is-large">
+                <span class="icon is-small">
+                  <i class="fa-solid fa-thumbs-up"></i>
+                  <i class="fa-duotone fa-check"></i>
+                </span>
+                <span>Vote up!</span>
+              </buton>
+            </form>
+            </center>
+        </div>
+      </div>
+      <nav class="level is-mobile">
+        <div class="level-left">
+          <div class="level-item">
+            <h4 id="const" class="title is-3" style="font-family: Montserrat">{{ suggestion.title }}</h4>
+          </div>
+          <div class="level-item has-text-centered">
+            <div>
+              <button class="button is-rounded is-static">{{ suggestion.status.name }}</button>
+            </div>
+          </div>
+        </div>
+      </nav>
+      <article class="message">
+        <div class="message-header">
+          <p>@JohnSmith</p>
+          {{ suggestion.created_at }}
+        </div>
+        <div class="message-body" >
+          {{ suggestion.description }}
+          <p align="right">{{ suggestion.sum_comments }} comments</p>
+        </div>
+      </article>
+    </div>
+    {% include "comments.html" %}
+    {% include "pagination.html" with objects=comments %}
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+{% endblock %}

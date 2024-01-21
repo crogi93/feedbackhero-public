@@ -41,7 +41,7 @@ class BoardDetailView(DetailView):
 
     def put(self, request: HttpRequest, id: int) -> JsonResponse:
         object = get_object_or_404(Board, id=id)
-        serializer = BoardSerializer(object, data=request.data)
+        serializer = BoardSerializer(object, data=request.data, partial=True)
         if not serializer.is_valid():
             return JsonResponse(
                 {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
@@ -105,7 +105,7 @@ class CommentDetailView(APIView):
     def put(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         comment = get_object_or_404(Comment, suggestion=suggestion, id=cid)
-        serializer = CommentSerializer(comment, data=request.data)
+        serializer = CommentSerializer(comment, data=request.data, partial=True)
         if not serializer.is_valid():
             return JsonResponse(
                 {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST

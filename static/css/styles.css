@@ -1,0 +1,7 @@
+#notification {
+    transition: opacity 0.5s ease-out; /* Adjust the duration as needed */
+  }
+
+  .fade-out {
+    opacity: 0;
+  }

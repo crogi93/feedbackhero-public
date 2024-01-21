@@ -1,0 +1,124 @@
+{% extends "base_board_view.html" %}
+{% load static %}
+
+{% block title %}Feedbackhero - {{ board.name }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    {% include "notifications.html" %}
+    <form action="{% url 'suggestionscreateview' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" id="board" name="board" value="{{ board.id }}">
+      <div class="field is-horizontal">
+        <div class="field-label is-normal">
+          <label class="label">From</label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <p class="control has-icons-left">
+              <input name="author" class="input" id="authorInput" type="text" placeholder="Name">
+              <span class="icon is-small is-left">
+                <i class="fas fa-user"></i>
+              </span>
+              <p class="help is-danger" id="authorError"></p>
+            </p>
+          </div>
+          <div class="field">
+            <p class="control has-icons-left has-icons-right">
+              <input name="email" class="input" id="emailInput" type="email" placeholder="Email" required>
+              <span class="icon is-small is-left">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <span class="icon is-small is-right" id="emailStatusIcon" style="display: none;">
+                <i class="fas fa-check"></i>
+              </span>
+              <p class="help is-danger" id="emailError"></p>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="field is-horizontal">
+        <div class="field-label is-normal">
+          <label class="label">Title</label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <div class="control">
+              <input name="title" class="input" type="text" id="titleInput" placeholder="e.g. Partnership opportunity" required>
+            </div>
+            <p class="help is-danger" id="titleError"></p>
+          </div>
+        </div>
+      </div>
+      <div class="field is-horizontal">
+        <div class="field-label is-normal">
+          <label class="label">Description</label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <div class="control">
+              <textarea name="description" class="textarea" id="descriptionInput" placeholder="Explain how we can improve our product..." required></textarea>
+            </div>
+            <p class="help is-danger" id="descriptionError"></p>
+          </div>
+        </div>
+      </div>
+      <div class="field is-horizontal">
+        <div class="field-label is-normal">
+          <label class="label">Image</label>
+        </div>
+        <div class="field-body">
+          <div class="file has-name is-boxed">
+            <label class="file-label">
+              <input class="file-input" type="file" name="image" id="fileInput" accept="image/png, image/jpeg, image/jpg, image/gif">
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label">
+                  Choose a file…
+                </span>
+              </span>
+              <span class="file-name" id="fileNameButton">
+                No file selected
+              </span>
+            </label>
+            <p class="help is-danger" id="fileError"></p>
+          </div>
+        </div>
+      </div>
+      <div class="field is-horizontal">
+        <div class="field-label">
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <nav class="level">
+              <div class="level-left">
+                <div class="level-item">
+                  <div class="control">
+                    <button class="button is-primary" type="submit">
+                      Create suggestion
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="level-right">
+                <div class="level-item">
+                  <div class="control">
+                    <a class="button is-danger" href="{% url 'suggestionslistview' %}">
+                      Cancel
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/scripts.js' %}"></script>
+{% endblock %}
