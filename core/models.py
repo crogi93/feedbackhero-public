@@ -50,7 +50,7 @@ class Status(TimestampMixin):
 class Suggestion(TimestampMixin):
     board = models.ForeignKey(Board, on_delete=models.DO_NOTHING)
     title = models.CharField(max_length=255, unique=True)
-    description = models.TextField(max_length=1000, blank=True, default="")
+    description = models.TextField(max_length=1000)
     image = models.FileField(upload_to=upload_path, blank=True, null=True)
     status = models.ForeignKey(
         Status, on_delete=models.DO_NOTHING, blank=True, null=True
@@ -62,7 +62,7 @@ class Suggestion(TimestampMixin):
 
 
 class Comment(TimestampMixin):
-    body = models.TextField(max_length=1000, blank=True, default="")
+    body = models.TextField(max_length=1000)
     suggestion = models.ForeignKey(
         Suggestion, related_name="comments", on_delete=models.DO_NOTHING
     )

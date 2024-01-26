@@ -1,0 +1,50 @@
+<div id="modal-comments-form" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <form action="{% url 'suggestionsdetailview' id=suggestion.id %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" id="suggestion" name="suggestion" value="{{ suggestion.id }}">
+        <div class="field is-normal">
+          <label class="label">Your comment</label>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <textarea name="body" class="textarea" id="bodyInput" placeholder="Explain how we can improve our product..."></textarea>
+              </div>
+              <p class="help is-danger" id="bodyError"></p>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-label">
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <nav class="level">
+                <div class="level-left">
+                  <div class="level-item">
+                    <div class="control">
+                      <button class="button is-primary" type="submit">
+                        Create comment
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="level-right">
+                  <div class="level-item">
+                    <div class="control">
+                      <button class="button is-danger close-modal">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -51,8 +51,8 @@
     </div>
     {% include "comments.html" %}
     {% include "pagination.html" with objects=comments %}
-  </div>
-</section>
+    {% include "comments_form.html" %}
 {% endblock %}
 {% block scripts %}
+<script src="{% static 'js/scripts.js' %}"></script>
 {% endblock %}
