@@ -8,11 +8,11 @@ from django.views.generic.base import View
 from core.serializers import *
 from core.models import *
 
-from frontend.filters import *
+from users.filters import *
 
 
 class SuggestionListView(View):
-    template_name = "suggestion_list_view.html"
+    template_name = "users/suggestion_list_view.html"
 
     def get(self, request):
         board = get_object_or_404(Board, id=1)
@@ -42,7 +42,7 @@ class SuggestionListView(View):
 
 
 class SuggestionDetailView(View):
-    template_name = "suggestion_detail_view.html"
+    template_name = "users/suggestion_detail_view.html"
 
     def get(self, request, id):
         board = get_object_or_404(Board, id=1)
@@ -79,7 +79,7 @@ class SuggestionDetailView(View):
 
 
 class SuggestionCreateView(View):
-    template_name = "suggestion_create_view.html"
+    template_name = "users/suggestion_create_view.html"
 
     def get(self, request):
         board = get_object_or_404(Board, id=1)

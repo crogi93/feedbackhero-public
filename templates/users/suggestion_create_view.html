@@ -1,11 +1,11 @@
-{% extends "base_board_view.html" %}
+{% extends "users/base_board_view.html" %}
 {% load static %}
 
 {% block title %}Feedbackhero - {{ board.name }}{% endblock %}
 {% block content %}
 <section class="section">
   <div class="container">
-    {% include "notifications.html" %}
+    {% include "users/notifications.html" %}
     <form action="{% url 'suggestionscreateview' %}" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <input type="hidden" id="board" name="board" value="{{ board.id }}">

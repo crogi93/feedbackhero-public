@@ -32,14 +32,16 @@ CORS_ALLOWED_ORIGINS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    # "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "core",
-    "frontend",
+    "users",
+    "customers",
+    # 3rd party
     "rest_framework",
     "django_filters",
     "corsheaders",
@@ -106,7 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "customers.User"
 
+AUTHENTICATION_BACKENDS = ["customers.auths.EmailBackend"]
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -136,9 +140,17 @@ MEDIA_URL = "/media/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Frontend settings
+# Users settings
 PAGINATION_LIMIT_SUGGESTIONS = 3
 PAGINATION_LIMIT_COMMENTS = 3
+
+# Email settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "fbhero.test@gmail.com"
+EMAIL_HOST_PASSWORD = "rrvdjakeendvkcui"
+EMAIL_USE_TLS = True
 
 # Logging SQL
 

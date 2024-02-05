@@ -1,6 +1,6 @@
 from django.urls import path
 
-from frontend.views import *
+from users.views import *
 
 urlpatterns = [
     path("board", SuggestionListView.as_view(), name="suggestionslistview"),

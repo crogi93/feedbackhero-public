@@ -2,6 +2,6 @@
     transition: opacity 0.5s ease-out; /* Adjust the duration as needed */
   }
 
-  .fade-out {
+    .fade-out {
     opacity: 0;
-  }
+    }
