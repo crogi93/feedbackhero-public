@@ -21,11 +21,10 @@
   </head>
   <body>
     <div id="content">
-      {% include "customers/navbar.html" %}
-      {% comment %}{% include "customer/hero.html" %} {% endcomment %}
+      {% include "customers/components/navbar.html" %}
       {% block content %}{% endblock %}
     </div>
     {% block scripts %}{% endblock %}
   </body>
-  <footer>{% include "customers/footer.html" %}</footer>
+  <footer>{% include "customers/components/footer.html" %}</footer>
 </html>

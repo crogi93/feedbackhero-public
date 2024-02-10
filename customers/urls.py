@@ -4,14 +4,25 @@ from customers.views import *
 
 
 urlpatterns = [
-    path("login", LoginView.as_view(), name="login_view"),
-    path("register", RegisterView.as_view(), name="register_view"),
+    path("", Index.as_view(), name="index"),
+    path("login", LoginView.as_view(), name="login"),
+    path("singup", RegisterView.as_view(), name="singup"),
+    path("activate/<uidb64>/<token>", ActivationView.as_view(), name="activate"),
     path("logout", logout_view, name="logout"),
-    path("dashboard", Dashboard.as_view(), name="dashboard"),
-    path("password_reset", reset_password, name="password_reset"),
+    path("resetpassword", reset_password, name="resetpassword"),
     path(
-        "reset/<uidb64>/<token>",
+        "resetpassword/<uidb64>/<token>",
         PasswordResetConfirmView.as_view(),
-        name="password_reset_confirm",
+        name="resetpassword_confirm",
+    ),
+    path("dashboard", Dashboard.as_view(), name="dashboard"),
+    path("dashboard/profile", Profile.as_view(), name="dashboard_profile"),
+    path("dashboard/settings", CustomerSettings.as_view(), name="dashboard_settings"),
+    path("dashboard/changepassword", change_password, name="dashboard_changepassword"),
+    path("dashboard/changeemail", change_email, name="dashboard_changeemail"),
+    path(
+        "confirmemail/<uidb64>/<eidb64>/<token>",
+        ConfirmNewEmail.as_view(),
+        name="confirmemail",
     ),
 ]

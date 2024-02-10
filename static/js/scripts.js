@@ -68,3 +68,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdownButton = document.getElementById('dropdown-button');
+    const dropdownDashboard = document.getElementById('dropdown-dashboard');
+
+    dropdownButton.addEventListener('click', () => {
+      console.log(dropdownDashboard)
+      dropdownDashboard.classList.toggle('is-active');
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!dropdownDashboard.contains(event.target)) {
+        dropdownDashboard.classList.remove('is-active');
+      }
+    });
+  });

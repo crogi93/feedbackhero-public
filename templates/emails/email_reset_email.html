@@ -1,0 +1,15 @@
+{% autoescape off %}
+Hello {{ user.first_name }},
+We hope this message finds you well.
+
+We would like to inform you that a new email address has been registered under your account.
+To ensure the security and accuracy of your information, we kindly request you to verify this change by clicking confirmation link below:
+
+{{ confirm_url }}
+
+Your prompt attention to this matter is greatly appreciated.
+Should you have any questions or require further assistance, please do not hesitate to contact our support team.
+
+Sincerely,
+The FeedbackHero Team
+{% endautoescape %}

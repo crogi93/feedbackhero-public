@@ -144,6 +144,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 PAGINATION_LIMIT_SUGGESTIONS = 3
 PAGINATION_LIMIT_COMMENTS = 3
 
+# Customer settings
+PASSWORD_REGEX = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$"
+
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"

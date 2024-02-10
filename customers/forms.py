@@ -62,7 +62,7 @@ class RegisterForm(forms.ModelForm):
         return user
 
 
-class PasswordResetForm(forms.Form):
+class ResetPasswordForm(forms.Form):
     email = LowercaseEmailField()
 
     def clean_email(self):
@@ -74,9 +74,12 @@ class PasswordResetForm(forms.Form):
         return email
 
 
-class SetPasswordForm(forms.Form):
-    password = forms.CharField()
+class SetPasswordForm(forms.ModelForm):
     password_confirmation = forms.CharField()
+
+    class Meta:
+        model = User
+        fields = ["password"]
 
     def clean(self):
         password = self.cleaned_data.get("password")
@@ -90,3 +93,50 @@ class SetPasswordForm(forms.Form):
         if commit:
             user.save()
         return user
+
+
+class ChangePasswordForm(forms.ModelForm):
+    current_password = forms.CharField()
+    password_confirmation = forms.CharField()
+    email = LowercaseEmailField()
+
+    class Meta:
+        model = User
+        fields = ["password"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        current_password = cleaned_data.get("current_password")
+        if email and current_password:
+            user = authenticate(email=email, password=current_password)
+            if user is None:
+                raise forms.ValidationError("Invalid current password.")
+
+        return cleaned_data
+
+    def clean_new_password(self):
+        password = self.cleaned_data.get("password")
+        password_confirmation = self.cleaned_data.get("password_confirmation")
+
+        if password and password_confirmation and password != password_confirmation:
+            raise forms.ValidationError("Passwords do not match")
+        return password_confirmation
+
+    def save(self, user, commit=True):
+        user.set_password(self.cleaned_data.get("password"))
+        if commit:
+            user.save()
+        return user
+
+
+class ChangeEmailForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["email"]
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("This email is already in use.")
+        return email

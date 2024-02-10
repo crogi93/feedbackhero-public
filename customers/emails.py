@@ -3,30 +3,40 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 
-def password_reset(to_email, user, url):
-    email_template = render_to_string(
-        "emails/password_reset_email.html",
-        {
-            "user": user,
-            "reset_url": url,
-        },
-    )
-    send_mail(
-        "FeedbackHero password reset.",
-        email_template,
-        settings.EMAIL_HOST_USER,
-        [to_email],
-    )
+class Email:
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def send(self, recipients):
+        rendered = render_to_string(self.template, self.kwargs)
+        send_mail(self.title, rendered, settings.EMAIL_HOST_USER, [recipients])
 
 
-def password_reset_done(to_email):
-    email_template = render_to_string(
-        "emails/password_reset_done_email.html", context=None
-    )
+class PasswordReset(Email):
+    title = "Password Reset"
+    template = "emails/password_reset_email.html"
 
-    send_mail(
-        "Your password have been changed.",
-        email_template,
-        settings.EMAIL_HOST_USER,
-        [to_email],
-    )
+
+class PasswordResetDone(Email):
+    title = "Your Password Has Been Changed"
+    template = "emails/password_reset_done_email.html"
+
+
+class EmailReset(Email):
+    title = "Confirmation Required: New Email Address"
+    template = "emails/email_reset_email.html"
+
+
+class EmailResetDone(Email):
+    title = "Email Address Successfully Changed"
+    template = "emails/email_reset_done_email.html"
+
+
+class AccountCreation(Email):
+    title = "Your Account Creation Confirmation"
+    template = "emails/account_creation_email.html"
+
+
+class AccountActivation(Email):
+    title = "Activate Your Account Now"
+    template = "emails/account_activation_email.html"

@@ -1,0 +1,17 @@
+{% extends "customers/components/base_view.html" %}
+{% load static %}
+
+{% block title %}FeedbackHero - index{% endblock %}
+{% block content %}
+<section class="hero is-medium">
+  <div class="container">
+    <div class="hero-body has-text-centered">
+      <h1 class="title is-1">Success! </h1>
+      <h2 class="title is-2">Your email has been successfully changed</h2>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/scripts.js' %}"></script>
+{% endblock %}

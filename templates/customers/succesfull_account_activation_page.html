@@ -1,0 +1,18 @@
+{% extends "customers/components/base_view.html" %}
+{% load static %}
+
+{% block title %}FeedbackHero - succesful email change{% endblock %}
+{% block content %}
+<section class="hero is-medium">
+  <div class="container">
+    <div class="hero-body has-text-centered">
+    {% include "customers/components/notifications.html" %}
+      <h1 class="title is-1">Success! </h1>
+      <h2 class="title is-2">You have successfully created an account! You can login now.</h2>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/scripts.js' %}"></script>
+{% endblock %}

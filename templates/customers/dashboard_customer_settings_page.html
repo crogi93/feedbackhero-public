@@ -1,0 +1,128 @@
+{% extends "customers/components/base_dashboard_view.html" %}
+{% load static %}
+
+{% block title %}FeedbackHero - settings{% endblock %}
+{% block content %}
+<section class="hero is-hero-bar">
+  <div class="card">
+    <header class="card-header">
+      <p class="card-header-title">
+        <span class="icon"><i class="mdi mdi-lock default"></i></span>
+        Change Password
+      </p>
+    </header>
+    <div class="card-content">
+      <form action="{% url 'dashboard_changepassword' %}" method="POST">
+        {% csrf_token %}
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Current password</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input type="password" name="current_password" autocomplete="current-password" class="input" required>
+              </div>
+              <p class="help">Required. Your current password</p></div>
+          </div>
+        </div>
+        <hr>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">New password</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input type="password" autocomplete="new-password" name="password" class="input" required>
+              </div>
+              <p class="help">Required. New password</p>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Confirm password</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input type="password" autocomplete="new-password" name="password_confirmation" class="input" required>
+              </div>
+              <p class="help">Required. New password one more time</p>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal"></div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <button type="submit" class="button is-primary">
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <br>
+  <div class="card">
+    <header class="card-header">
+      <p class="card-header-title">
+        <span class="icon"><i class="mdi mdi-lock default"></i></span>
+        Change Email
+      </p>
+    </header>
+    <div class="card-content">
+      <form action="{% url 'dashboard_changeemail' %}" method="POST">
+        {% csrf_token %}
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Current email</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <span class="button is-static">{{ user.email }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">New email</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input type="email" autocomplete="new-email" name="email" class="input" required>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal"></div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <button type="submit" class="button is-primary">
+                  Submit
+                </button>
+                <p class="help">After submitting, you will receive an email prompting you to accept your new email address.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/scripts.js' %}"></script>
+{% endblock %}

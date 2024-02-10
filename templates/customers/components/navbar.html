@@ -10,8 +10,20 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="field is-grouped">
+          {% if user.is_authenticated %}
           <p class="control">
-            <a class="bd-tw-button button" target="_blank" href="">
+            <a class="bd-tw-button button" href="{% url 'dashboard' %}">
+              <span class="icon">
+                <i class="fa-solid fa-right-to-bracket"></i>
+              </span>
+              <span>
+                Dashboard
+              </span>
+            </a>
+          </p>
+          {% else %}
+          <p class="control">
+            <a class="bd-tw-button button" href="{% url 'index' %}">
               <span class="icon">
                 <i class="fa-solid fa-right-to-bracket"></i>
               </span>
@@ -20,6 +32,7 @@
               </span>
             </a>
           </p>
+          {% endif %}
         </div>
       </div>
     </div>
