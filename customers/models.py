@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from customers.managers import *
-from core.models import TimestampMixin
+from core.basemodels import TimestampMixin
 
 from datetime import datetime
 import re

@@ -20,6 +20,15 @@ urlpatterns = [
     path("dashboard/settings", CustomerSettings.as_view(), name="dashboard_settings"),
     path("dashboard/changepassword", change_password, name="dashboard_changepassword"),
     path("dashboard/changeemail", change_email, name="dashboard_changeemail"),
+    path("dashboard/createboard", CreateBoard.as_view(), name="dashboard_createboard"),
+    path("dashboard/deleteboard/<int:id>", delete_board, name="dashboard_deleteboard"),
+    path("dashboard/activeboard/<int:id>", active_board, name="dashboard_boardactive"),
+    path(
+        "dashboard/deactiveboard/<int:id>",
+        deactive_board,
+        name="dashboard_boarddeactive",
+    ),
+    path("dashboard/previewboard", PreviewBoard.as_view(), name="preview_board"),
     path(
         "confirmemail/<uidb64>/<eidb64>/<token>",
         ConfirmNewEmail.as_view(),

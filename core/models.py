@@ -3,22 +3,8 @@ import uuid
 
 from django.db import models
 
-from datetime import datetime
-
-
-class TimestampMixin(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        abstract = True
-
-    def is_deleted(self) -> bool:
-        return self.deleted_at
-
-    def set_deleted(self) -> None:
-        self.deleted_at = datetime.now()
+from customers.models import User
+from core.basemodels import TimestampMixin
 
 
 def upload_path(instance, filename):
@@ -28,9 +14,13 @@ def upload_path(instance, filename):
 
 
 class Board(TimestampMixin):
+    user = models.ForeignKey(User, related_name="board", on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=255, unique=True)
     logo = models.FileField(upload_to=upload_path, blank=True, null=True)
     description = models.TextField()
+    footer = models.JSONField(blank=True, null=True)
+
+    is_active = models.BooleanField(default=True)
 
     @property
     def thumbnail(self):

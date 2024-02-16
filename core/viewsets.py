@@ -49,5 +49,5 @@ class DetailView(APIView):
     def delete(self, request: HttpRequest, bid: int, id: int) -> JsonResponse:
         board = get_object_or_404(Board, id=bid)
         object = get_object_or_404(self.object_class, board=board, id=id)
-        object.delete()
+        object.soft_delete()
         return JsonResponse({}, status=status.HTTP_204_NO_CONTENT, safe=False)

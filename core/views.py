@@ -52,7 +52,7 @@ class BoardDetailView(DetailView):
 
     def delete(self, request: HttpRequest, id: int) -> JsonResponse:
         object = get_object_or_404(Board, id=id)
-        object.delete()
+        object.soft_delete()
         return JsonResponse({}, status=status.HTTP_204_NO_CONTENT, safe=False)
 
 
@@ -117,7 +117,7 @@ class CommentDetailView(APIView):
     def delete(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         comment = get_object_or_404(Comment, suggestion=suggestion, id=cid)
-        comment.delete()
+        comment.soft_delete()
         return JsonResponse({}, status=status.HTTP_204_NO_CONTENT, safe=False)
 
 
@@ -150,5 +150,5 @@ class VoteDetailView(APIView):
     def delete(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
         suggestion = get_object_or_404(Suggestion, id=id)
         vote = get_object_or_404(Vote, suggestion=suggestion, id=cid)
-        vote.delete()
+        vote.soft_delete()
         return JsonResponse({}, status=status.HTTP_204_NO_CONTENT, safe=False)

@@ -84,3 +84,76 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+document.addEventListener('DOMContentLoaded', function () {
+  const dropdown = document.getElementById('dropdown-create-contact');
+  const trigger = dropdown.querySelector('.dropdown-trigger');
+  const menu = dropdown.querySelector('.dropdown-menu');
+  const selectedOptionsContainer = document.getElementById('selectedOptions');
+
+  trigger.addEventListener('click', function (event) {
+    event.stopPropagation();
+    dropdown.classList.toggle('is-active');
+  });
+
+  document.addEventListener('click', function (event) {
+    if (!dropdown.contains(event.target)) {
+      dropdown.classList.remove('is-active');
+    }
+  });
+
+  const dropdownItems = document.querySelectorAll('.dropdown-item');
+  dropdownItems.forEach(function (item) {
+    item.addEventListener('click', function () {
+      if (!item.classList.contains('disabled')) {
+        const selectedOption = item.dataset.option;
+        const selectedInput = item.dataset.input;
+        const selectedIcon = item.dataset.icon;
+        const newOption = document.createElement('div');
+        newOption.classList.add('buttons', 'has-addons', 'mt-1');
+        newOption.innerHTML = `
+          <a class="button is-static">
+            <span class="icon is-small">
+              <i class="${selectedIcon}"></i>
+            </span>
+            <span>${selectedOption}</span>
+          </a>
+          <a class="button is-danger remove-button">
+            <span class="icon is-small">
+              <i class="fas fa-times"></i>
+            </span>
+          </a>
+          <input type="text" name="${item.dataset.input}" class="input is-small" placeholder="Enter link">
+        `;
+        selectedOptionsContainer.appendChild(newOption);
+        item.classList.add('disabled');
+      }
+    });
+  });
+
+  selectedOptionsContainer.addEventListener('click', function (event) {
+    const target = event.target.closest('.remove-button');
+    if (target) {
+      const parentDiv = target.closest('.buttons');
+      parentDiv.remove();
+      const optionText = parentDiv.querySelector('span:last-child').innerText;
+      dropdownItems.forEach(function (item) {
+        if (item.dataset.option === optionText) {
+          item.classList.remove('disabled');
+        }
+      });
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const currentUrl = window.location.href;
+    const dashboardLink = document.getElementById('dashboard-link');
+    const links = document.querySelectorAll('.menu-list a');
+
+    links.forEach(link => {
+      if (link.href === currentUrl) {
+        link.classList.add('is-active');
+      }
+    });
+  });

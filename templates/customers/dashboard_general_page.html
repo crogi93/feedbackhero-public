@@ -3,20 +3,102 @@
 
 {% block title %}FeedbackHero - dashboard{% endblock %}
 {% block content %}
-<div class="level">
-  <div class="level-left">
-    <div class="level-item">
-      <div class="title">Dashboard</div>
+{% if boards %}
+<div class="title">Dashboard</div>
+<section class="hero">
+  {% for board in boards %}
+  <div class="box">
+    <nav class="level">
+      <div class="level-left">
+        <div class="level-item">
+          {% if board.is_active %}
+            <span class="icon is-green"><i class="fa-solid fa-circle"></i></span>
+          {% else %}
+          <span class="icon is-red"><i class="fa-solid fa-circle"></i></span>
+          {% endif %}
+            <h2 class="title is-4">{{ board.name }}</h2>
+        </div>
+        <div class="level-left">
+          <a class="button is-medium is-primary is-static">subs: 30 days</a>
+        </div>
+      </div>
+      <div class="level-right">
+        {% if board.is_active %}
+        <div class="level-item">
+          <h2 class="title is-4 is-green">Status: <span class="online">online</span></h2>
+        </div>
+        <div class="level-item">
+          <div class="control">
+            <a href="{% url 'dashboard_boarddeactive' id=board.id %}" class="button is-danger is-medium">Stop</a>
+          </div>
+        </div>
+        {% else %}
+        <div class="level-item">
+          <h2 class="title is-4 is-red">Status: <span class="online">offline</span></h2>
+        </div>
+        <div class="level-item">
+          <div class="control">
+            <a href="{% url 'dashboard_boardactive' id=board.id %}" class="button is-primary is-medium">Go live</a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </nav>
+    <hr>
+    <div class="tile is-ancestor has-text-centered">
+      <div class="tile is-parent">
+          <article class="tile is-child box">
+              <p class="title">439k</p>
+              <p class="subtitle">Users</p>
+          </article>
+      </div>
+      <div class="tile is-parent">
+          <article class="tile is-child box">
+              <p class="title">{{ board.suggestion_count }}</p>
+              <p class="subtitle">Suggestions</p>
+          </article>
+      </div>
+      <div class="tile is-parent">
+          <article class="tile is-child box">
+              <p class="title">{{ board.vote_count }}</p>
+              <p class="subtitle">Votes</p>
+          </article>
+      </div>
     </div>
+    <nav class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <a class="button is-medium is-primary">Settings</a>
+        </div>
+        <div class="level-item">
+          <a class="button is-medium is-primary">Suggestions</a>
+        </div>
+        <div class="level-item">
+          <a class="button is-medium is-primary">Users</a>
+        </div>
+        <div class="level-item">
+          <a class="button is-medium is-primary">Status</a>
+        </div>
+      </div>
+      <div class="level-right">
+        <div class="level-item">
+          <a class="button is-medium is-danger js-modal-trigger" data-target="modal-delete-board-form">Delete Board</a>
+        </div>
+      </div>
+    </nav>
   </div>
-  <div class="level-right">
-    <div class="level-item">
-      <button type="button" class="button is-small">
-        March 8, 2017 - April 6, 2017
-      </button>
-    </div>
+  {% include "customers/components/modal_delete_board_form.html" %}
+  {% endfor %}
+</section>
+{% else %}
+<div class="container">
+  <div class="hero-body has-text-centered">
+  {% include "customers/components/notifications.html" %}
+    <h1 class="title is-1">No boards. </h1>
+    <h2 class="title is-2">Purchase a subscription and create your first feedback board.</h2>
   </div>
 </div>
+{% endif %}
 {% endblock %}
 {% block scripts %}
   <script src="{% static 'js/scripts.js' %}"></script>

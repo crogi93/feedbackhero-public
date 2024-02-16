@@ -11,12 +11,16 @@ from django.contrib.auth.tokens import (
     default_token_generator,
     PasswordResetTokenGenerator,
 )
-from django.shortcuts import render, redirect
+from django.db.models import Count, Q
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_http_methods
 from django.utils.encoding import force_str, force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.generic.base import View
+
+from core.models import Suggestion
 
 from customers import emails
 from customers.forms import *
@@ -105,6 +109,7 @@ class ActivationView(View):
         return render(request, self.template_name)
 
 
+@require_http_methods(["POST"])
 def reset_password(request):
     form = ResetPasswordForm(request.POST)
 
@@ -171,8 +176,49 @@ class Dashboard(View):
     template_name = "customers/dashboard_general_page.html"
 
     def get(self, request):
-        context = {}
+        boards = Board.objects.filter(
+            user=request.user, deleted_at__isnull=True
+        ).annotate(
+            suggestion_count=Count("suggestion", distinct=True),
+            vote_count=Count("suggestion__votes", distinct=True),
+        )
+        context = {"boards": boards}
         return render(request, self.template_name, context)
+
+
+@login_required(login_url=reverse_lazy("login"))
+@require_http_methods(["POST"])
+def delete_board(request, id):
+    board = get_object_or_404(Board, user=request.user, deleted_at__isnull=True, id=id)
+
+    if request.user.check_password(request.POST.get("password")):
+        board.soft_delete()
+        board.save()
+        messages.success(request, "Your board has been deleted successfully.")
+        return redirect("dashboard")
+
+    messages.success(request, "The password entered is invalid")
+    return redirect("dashboard")
+
+
+@login_required(login_url=reverse_lazy("login"))
+@require_http_methods(["GET"])
+def active_board(request, id):
+    board = get_object_or_404(Board, user=request.user, deleted_at__isnull=True, id=id)
+    board.is_active = True
+    board.save()
+    messages.success(request, "Your board is live now!")
+    return redirect("dashboard")
+
+
+@login_required(login_url=reverse_lazy("login"))
+@require_http_methods(["GET"])
+def deactive_board(request, id):
+    board = get_object_or_404(Board, user=request.user, deleted_at__isnull=True, id=id)
+    board.is_active = False
+    board.save()
+    messages.success(request, "Your board is offline now!")
+    return redirect("dashboard")
 
 
 @method_decorator(login_required(login_url=reverse_lazy("login")), name="dispatch")
@@ -195,7 +241,45 @@ class CustomerSettings(View):
         return render(request, self.template_name, context)
 
 
+@method_decorator(login_required(login_url=reverse_lazy("login")), name="dispatch")
+class CreateBoard(View):
+    template_name = "customers/dashboard_create_board_page.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        footer = {
+            "footer_text": request.POST.get("footer_text"),
+            "footer_extra": request.POST.get("footer_extra"),
+            "contacts": {
+                "twitter": request.POST.get("twitter"),
+                "instagram": request.POST.get("instagram"),
+                "email": request.POST.get("email"),
+                "discord": request.POST.get("discord"),
+                "website": request.POST.get("website"),
+            },
+        }
+        data = {**request.POST.dict(), "footer": footer, "user": request.user}
+        form = CreateBoardForm(data)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your board has been created successfully.")
+            return redirect("dashboard_settings")
+
+        [messages.warning(request, errors[0]) for errors in form.errors.values()]
+        return render(request, self.template_name)
+
+
+class PreviewBoard(View):
+    template_name = "customers/preview_board_page.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+
 @login_required(login_url=reverse_lazy("login"))
+@require_http_methods(["POST"])
 def change_password(request):
     data = {**request.POST.dict(), "email": request.user.email}
     form = ChangePasswordForm(data)
@@ -212,6 +296,7 @@ def change_password(request):
 
 
 @login_required(login_url=reverse_lazy("login"))
+@require_http_methods(["POST"])
 def change_email(request):
     form = ChangeEmailForm(request.POST)
 

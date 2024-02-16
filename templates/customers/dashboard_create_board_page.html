@@ -1,0 +1,205 @@
+{% extends "customers/components/base_dashboard_view.html" %}
+{% load static %}
+
+{% block title %}FeedbackHero - dashboard{% endblock %}
+{% block content %}
+<div class="title">Create board</div>
+<section class="hero">
+  <form action="{% url 'dashboard_createboard' %}" method="POST">
+    {% csrf_token %}
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+          <span class="icon"><i class="fa-solid fa-gear"></i></span>
+          General
+        </p>
+      </header>
+      <div class="card-content">
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Title</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input type="text" name="name" autocomplete="company-name" class="input" placeholder="Company name" required>
+              </div>
+              <p class="help">We recommend placing your company name here.</p></div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Description</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <textarea name="description" class="textarea" id="bodyInput" placeholder="You may provide a short description of your product here, or outline the rules for the feedback board."></textarea>
+              </div>
+              <p class="help">We recommend inserting your brief description here.</p>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Logo</label>
+          </div>
+          <div class="field-body">
+            <div class="file has-name">
+              <label class="file-label">
+                <input class="file-input" type="file" name="logo" id="fileInput" accept="image/png, image/jpeg, image/jpg, image/gif">
+                <span class="file-cta">
+                  <span class="file-icon">
+                    <i class="fas fa-upload"></i>
+                  </span>
+                  <span class="file-label">
+                    Choose a file…
+                  </span>
+                </span>
+                <span class="file-name" id="fileNameButton">
+                  No file selected
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+          <span class="icon"><i class="fa-solid fa-shoe-prints"></i></span>
+          Footer
+        </p>
+      </header>
+      <div class="card-content">
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Footer text</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <input type="text" name="footer_text" autocomplete="company-name" class="input" placeholder="Footer bolded text..." required>
+                </div>
+                <p class="help">You may provide the company's official quote here.</p></div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Extra text</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <textarea name="footer_extra" class="textarea" id="bodyInput" placeholder="You may provide a exta text here..."></textarea>
+                </div>
+                <p class="help">You may include any additional text in the footer section.</p>
+              </div>
+            </div>
+          </div>
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Contact</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <div class="dropdown" id="dropdown-create-contact">
+                    <div class="dropdown-trigger">
+                      <a class="button" id="dropdown-create-contact" aria-haspopup="true" aria-controls="dropdown-menu">
+                        <span>Click me!</span>
+                        <span class="icon is-small">
+                          <i class="fas fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                      </a>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                      <div class="dropdown-content">
+                        <a class="dropdown-item" data-input="website" data-option="Website" data-icon="fas fa-globe">Website</a>
+                        <a class="dropdown-item" data-input="email" data-option="Email" data-icon="fas fa-envelope">Email</a>
+                        <a class="dropdown-item" data-input="twitter" data-option="Twitter" data-icon="fa-brands fa-twitter">Twitter</a>
+                        <a class="dropdown-item" data-input="instagram" data-option="Instagram" data-icon="fa-brands fa-instagram">Instagram</a>
+                        <a class="dropdown-item" data-input="discord" data-option="Discord" data-icon="fa-brands fa-discord">Discord</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p class="help">You may include your contact options for your company here.</p>
+                <p class="help">You can choose more then one option.</p>
+                <div id="selectedOptions" class="mt-2">
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+          <span class="icon"><i class="fa-solid fa-paintbrush"></i></span>
+          Layout
+        </p>
+      </header>
+      <div class="card-content">
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Navbar</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input type="color" name="navbar_color" id="colorPicker" value="#3498db">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Background</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input type="color" name="background_color" id="colorPicker" value="#3498db">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Buttons</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <input type="color" name="buttons_color" id="colorPicker" value="#3498db">
+              </div>
+            </div>
+          </div>
+        </div>
+        <nav class="level">
+          <div class="level-left">
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <div class="control">
+                <a class="button is-info" href="{% url 'preview_board' %}">Preview</a>
+              </div>
+            </div>
+            <div class="level-item">
+              <div class="control">
+                <button class="button is-primary" type="submit">Create board</button>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/scripts.js' %}"></script>
+{% endblock %}

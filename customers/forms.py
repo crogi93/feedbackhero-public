@@ -1,7 +1,9 @@
+import json
 from django import forms
 from django.contrib.auth import authenticate
 
 from customers.models import User
+from core.models import Board
 
 
 class LowercaseEmailField(forms.EmailField):
@@ -140,3 +142,11 @@ class ChangeEmailForm(forms.ModelForm):
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("This email is already in use.")
         return email
+
+
+class CreateBoardForm(forms.ModelForm):
+    footer = forms.CharField(required=False)
+
+    class Meta:
+        model = Board
+        fields = ["user", "name", "logo", "description", "footer"]

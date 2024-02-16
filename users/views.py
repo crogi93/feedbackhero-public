@@ -15,7 +15,7 @@ class SuggestionListView(View):
     template_name = "users/suggestion_list_view.html"
 
     def get(self, request):
-        board = get_object_or_404(Board, id=1)
+        board = get_object_or_404(Board, id=2)
         statuses = Status.objects.filter(board=board).annotate(
             sum_suggestions=Count(
                 "suggestion", filter=Q(suggestion__board=board), distinct=True
@@ -45,7 +45,7 @@ class SuggestionDetailView(View):
     template_name = "users/suggestion_detail_view.html"
 
     def get(self, request, id):
-        board = get_object_or_404(Board, id=1)
+        board = get_object_or_404(Board, id=2)
         suggestion = (
             Suggestion.objects.filter(id=id).annotate(
                 sum_votes=Count("votes", distinct=True),
@@ -89,7 +89,7 @@ class SuggestionCreateView(View):
         return render(request, self.template_name, context)
 
     def post(self, request):
-        board = get_object_or_404(Board, id=1)
+        board = get_object_or_404(Board, id=2)
         data = {**request.POST.dict(), **request.FILES.dict()}
         suggestion = SuggestionSerializer(data=data)
         if suggestion.is_valid():

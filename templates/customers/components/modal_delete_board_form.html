@@ -1,0 +1,51 @@
+<div id="modal-delete-board-form" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <form action="{% url 'dashboard_deleteboard' id=board.id %}" method="POST">
+        {% csrf_token %}
+        <center>
+          <h1 class="title">Delete confirmation</h1>
+        </center>
+        <h2 class="subtitle">To initiate the deletion of the board, please confirm this action by entering your password. Please note that this action will result in the loss of the subscription associated with the board.</h2>
+        <div class="field">
+          <div class="field-body">
+            <div class="field">
+              <p class="control is-expanded">
+                <input name="password" class="input" type="password" placeholder="password" required>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-label">
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <nav class="level">
+                <div class="level-left">
+                  <div class="level-item">
+                    <div class="control">
+                      <button class="button is-primary" type="submit">
+                        Delete board
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="level-right">
+                  <div class="level-item">
+                    <div class="control">
+                      <button class="button is-danger close-modal">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
