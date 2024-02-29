@@ -1,80 +1,91 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.urls import reverse
+from django.db.models.signals import pre_save
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import AccessToken
 
 from core.models import Board
+from core.signals import auto_delete_file_on_change
+from customers.models import User
 
 
 class BoardTests(APITestCase):
-    MOCK_BOARD = {
-        "name": "PixelPulse",
-        "logo": SimpleUploadedFile(
-            name="mock_logo.jpg",
-            content=open("tests/images/mock_logo.jpg", "rb").read(),
-            content_type="image/jpeg",
-        ),
-        "description": "Embark on a creative journey with our art application. Immerse yourself in a world of inspiration, connect with artists worldwide, and showcase your masterpieces. Experience the beauty of art wherever you go, only with PixelPulse.",
-    }
+    fixtures = ["tests/core/fixtures/customers.json", "tests/core/fixtures/boards.json"]
 
     def setUp(self) -> None:
-        board = Board.objects.create(**self.MOCK_BOARD)
+        self.user = User.objects.get(email="example@proton.me")
+        self.token = str(AccessToken.for_user(self.user))
+        self.authorization_header = "Bearer {}".format(self.token)
+        pre_save.disconnect(sender=Board, receiver=auto_delete_file_on_change)
 
-    def test_create_board(self) -> None:
+    def test_success_post_board(self) -> None:
+        url = "/api/boards"
         payload = {
-            "name": "TravelMingle",
+            "name": "Example Company Name",
             "logo": SimpleUploadedFile(
-                name="mock_logo.jpg",
-                content=open("tests/images/mock_logo.jpg", "rb").read(),
+                name="example_logo.jpg",
+                content=open("tests/images/example_logo.jpg", "rb").read(),
                 content_type="image/jpeg",
             ),
-            "description": "TravelMingle is a cutting-edge travel application designed to enhance your globetrotting experience. It offers real-time flight and hotel bookings",
+            "description": "This is example description 1. This is used for testing purposes",
+            "footer": "{'footer_text': 'This is footer text.', 'footer_extra': 'This is extra footer text.', 'contacts': {'twitter': 'www.twitter.com', 'instagram': 'www.instagram.com', 'email': None, 'discord': None, 'website': None}}",
         }
-        url = reverse("board-list")
-        response = self.client.post(url, payload)
+
+        response = self.client.post(
+            url, data=payload, HTTP_AUTHORIZATION=self.authorization_header
+        )
+        payload.pop("logo")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNotNone(response.json()["data"]["logo"])
+        self.assertTrue(response.json()["data"]["is_active"])
+        self.assertDictContainsSubset(payload, response.json()["data"])
+
+    def test_success_get_board_list(self) -> None:
+        url = "/api/boards"
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization_header)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.json()["data"])
+
+    def test_unauthorized_get_board_list(self) -> None:
+        url = "/api/boards"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_success_get_board_detail(self) -> None:
+        url = "/api/boards/1"
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization_header)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNotNone(response.json()["data"]["logo"])
+        self.assertEqual(response.json()["data"]["name"], "Example Board 1")
+        self.assertEqual(
+            response.json()["data"]["description"],
+            "This is description for example board 1.",
+        )
+
+    def test_success_put_board(self) -> None:
+        url = "/api/boards/1"
+        payload = {
+            "name": "Example Board 3",
+            "logo": SimpleUploadedFile(
+                name="example_logo.jpg",
+                content=open("tests/images/example_logo.jpg", "rb").read(),
+                content_type="image/jpeg",
+            ),
+            "description": "This is example description 1. This is used for testing purposes",
+            "footer": "{'footer_text': 'This is footer text.', 'footer_extra': 'This is extra footer text.', 'contacts': {'twitter': 'www.twitter.com', 'instagram': 'www.instagram.com', 'email': None, 'discord': 'www.discord.com', 'website': None}}",
+        }
+        response = self.client.put(
+            url, payload, HTTP_AUTHORIZATION=self.authorization_header
+        )
         payload.pop("logo")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(response.json()["data"]["logo"])
         self.assertDictContainsSubset(payload, response.json()["data"])
 
-    def test_get_board_list(self) -> None:
-        url = reverse("board-list")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsNotNone(response.json()["data"][0]["logo"])
-        self.assertEqual(response.json()["data"][0]["name"], self.MOCK_BOARD["name"])
-        self.assertEqual(
-            response.json()["data"][0]["description"], self.MOCK_BOARD["description"]
-        )
-
-    def test_get_board_detail(self) -> None:
-        url = reverse("board-detail", kwargs={"id": 1})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsNotNone(response.json()["data"]["logo"])
-        self.assertEqual(response.json()["data"]["name"], self.MOCK_BOARD["name"])
-        self.assertEqual(
-            response.json()["data"]["description"], self.MOCK_BOARD["description"]
-        )
-
-    def test_update_board(self) -> None:
-        payload = {
-            "name": "SkyTravel",
-            "logo": SimpleUploadedFile(
-                name="mock_logo.jpg",
-                content=open("tests/images/mock_logo.jpg", "rb").read(),
-                content_type="image/jpeg",
-            ),
-            "description": "Elevate your journey with bespoke adventures. From exotic escapes to iconic destinations, our expert team crafts seamless, luxurious experiences. Unlock the world's wonders with SkyTravel—where every moment is a masterpiece.",
-        }
-        url = reverse("board-detail", kwargs={"id": 1})
-        response = self.client.put(url, payload)
-        payload.pop("logo")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsNotNone(response.json()["data"]["logo"])
-        self.assertDictContainsSubset(payload, response.json()["data"])
-
-    def test_delete_board(self) -> None:
-        url = reverse("board-detail", kwargs={"id": 1})
-        response = self.client.delete(url)
+    def test_success_delete_board(self) -> None:
+        url = "/api/boards/1"
+        response = self.client.delete(url, HTTP_AUTHORIZATION=self.authorization_header)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def tearDown(self) -> None:
+        pre_save.connect(sender=Board, receiver=auto_delete_file_on_change)

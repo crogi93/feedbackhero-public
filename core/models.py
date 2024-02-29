@@ -3,8 +3,8 @@ import uuid
 
 from django.db import models
 
-from customers.models import User
 from core.basemodels import TimestampMixin
+from customers.models import User
 
 
 def upload_path(instance, filename):
@@ -28,8 +28,15 @@ class Board(TimestampMixin):
 
 
 class Status(TimestampMixin):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     board = models.ForeignKey(Board, related_name="status", on_delete=models.DO_NOTHING)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["board", "name"], name="unique_statusname_per_board"
+            )
+        ]
 
     @property
     def full_name(self) -> str:
@@ -38,12 +45,19 @@ class Status(TimestampMixin):
 
 class Suggestion(TimestampMixin):
     board = models.ForeignKey(Board, on_delete=models.DO_NOTHING)
-    title = models.CharField(max_length=255, unique=True)
+    title = models.CharField(max_length=255)
     description = models.TextField(max_length=1000)
     image = models.FileField(upload_to=upload_path, blank=True, null=True)
     status = models.ForeignKey(
         Status, on_delete=models.DO_NOTHING, blank=True, null=True
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["board", "title"], name="unique_suggestionstitle_per_board"
+            )
+        ]
 
     @property
     def thumbnail(self):

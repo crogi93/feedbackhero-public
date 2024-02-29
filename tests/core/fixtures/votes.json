@@ -1,0 +1,22 @@
+[
+    {
+        "model": "core.vote",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-02-23T17:29:59.792Z",
+            "updated_at": "2024-02-23T17:29:59.792Z",
+            "deleted_at": null,
+            "suggestion": 1
+        }
+    },
+    {
+        "model": "core.vote",
+        "pk": 2,
+        "fields": {
+            "created_at": "2024-02-23T17:30:00.556Z",
+            "updated_at": "2024-02-23T17:30:00.556Z",
+            "deleted_at": null,
+            "suggestion": 1
+        }
+    }
+]

@@ -1,9 +1,10 @@
 import json
+
 from django import forms
 from django.contrib.auth import authenticate
 
-from customers.models import User
 from core.models import Board
+from customers.models import User
 
 
 class LowercaseEmailField(forms.EmailField):

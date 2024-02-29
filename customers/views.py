@@ -1,27 +1,21 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import (
-    authenticate,
-    login,
-    logout,
-    update_session_auth_hash,
-)
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import (
-    default_token_generator,
     PasswordResetTokenGenerator,
+    default_token_generator,
 )
 from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_http_methods
-from django.utils.encoding import force_str, force_bytes
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.views.decorators.http import require_http_methods
 from django.views.generic.base import View
 
 from core.models import Suggestion
-
 from customers import emails
 from customers.forms import *
 from customers.tokens import account_activation_token

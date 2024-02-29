@@ -1,0 +1,13 @@
+[
+    {
+        "model": "core.status",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-02-22T19:37:49.478Z",
+            "updated_at": "2024-02-22T19:37:49.478Z",
+            "deleted_at": null,
+            "name": "Example",
+            "board": 1
+        }
+    }
+]

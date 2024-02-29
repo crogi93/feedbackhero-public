@@ -1,0 +1,172 @@
+[
+    {
+      "model": "core.board",
+      "pk": 1,
+      "fields": {
+        "created_at": "2024-01-15T08:32:56.972Z",
+        "updated_at": "2024-01-15T08:32:56.972Z",
+        "deleted_at": null,
+        "name": "NurtiPlan",
+        "logo": "",
+        "description": "NutriPal is your personal nutrition companion, making healthy eating effortless. Plan your meals, track your nutrients, and discover delicious recipes tailored to your dietary preferences. Whether you're aiming for weight loss, muscle gain, or just a balanced lifestyle, NutriPal empowers you to achieve your health goals with ease. Say goodbye to mealtime stress and hello to a happier, healthier you!"
+      }
+    },
+    {
+      "model": "core.status",
+      "pk": 1,
+      "fields": {
+        "created_at": "2024-01-15T08:34:32.434Z",
+        "updated_at": "2024-01-15T08:34:32.434Z",
+        "deleted_at": null,
+        "name": "New",
+        "board": 1
+      }
+    },
+    {
+      "model": "core.status",
+      "pk": 2,
+      "fields": {
+        "created_at": "2024-01-15T08:34:32.722Z",
+        "updated_at": "2024-01-15T08:34:32.722Z",
+        "deleted_at": null,
+        "name": "Done",
+        "board": 1
+      }
+    },
+    {
+      "model": "core.status",
+      "pk": 3,
+      "fields": {
+        "created_at": "2024-01-15T08:34:32.987Z",
+        "updated_at": "2024-01-15T08:34:32.987Z",
+        "deleted_at": null,
+        "name": "Released",
+        "board": 1
+      }
+    },
+    {
+      "model": "core.suggestion",
+      "pk": 1,
+      "fields": {
+        "created_at": "2024-01-15T08:36:10.966Z",
+        "updated_at": "2024-01-15T08:36:10.966Z",
+        "deleted_at": null,
+        "board": 1,
+        "title": "Meal Personalization",
+        "description": "Implement a more sophisticated meal personalization feature. Consider integrating machine learning algorithms to analyze users' dietary habits, preferences, and health goals. This could enable NutriPal to provide even more tailored meal suggestions, taking into account individual nutritional needs and taste preferences.",
+        "image": "",
+        "status": 1
+      }
+    },
+    {
+      "model": "core.suggestion",
+      "pk": 2,
+      "fields": {
+        "created_at": "2024-01-15T08:36:29.668Z",
+        "updated_at": "2024-01-15T08:36:29.668Z",
+        "deleted_at": null,
+        "board": 1,
+        "title": "Cooking Features",
+        "description": "Implement a more sophisticated meal personalization feature. Consider integrating machine learning algorithms to analyze users' dietary habits, preferences, and health goals. This could enable NutriPal to provide even more tailored meal suggestions, taking into account individual nutritional needs and taste preferences.",
+        "image": "",
+        "status": 1
+      }
+    },
+    {
+      "model": "core.suggestion",
+      "pk": 3,
+      "fields": {
+        "created_at": "2024-01-15T08:36:43.005Z",
+        "updated_at": "2024-01-15T08:36:43.005Z",
+        "deleted_at": null,
+        "board": 1,
+        "title": "Community and Social Integration",
+        "description": "Implement a more sophisticated meal personalization feature. Consider integrating machine learning algorithms to analyze users' dietary habits, preferences, and health goals. This could enable NutriPal to provide even more tailored meal suggestions, taking into account individual nutritional needs and taste preferences.",
+        "image": "",
+        "status": 2
+      }
+    },
+    {
+      "model": "core.comment",
+      "pk": 1,
+      "fields": {
+        "created_at": "2024-01-15T08:37:56.163Z",
+        "updated_at": "2024-01-15T08:37:56.163Z",
+        "deleted_at": null,
+        "body": "Awesome Idea",
+        "suggestion": 1
+      }
+    },
+    {
+      "model": "core.comment",
+      "pk": 2,
+      "fields": {
+        "created_at": "2024-01-15T08:37:56.443Z",
+        "updated_at": "2024-01-15T08:37:56.443Z",
+        "deleted_at": null,
+        "body": "Great",
+        "suggestion": 1
+      }
+    },
+    {
+      "model": "core.comment",
+      "pk": 3,
+      "fields": {
+        "created_at": "2024-01-15T08:37:56.717Z",
+        "updated_at": "2024-01-15T08:37:56.717Z",
+        "deleted_at": null,
+        "body": "Great",
+        "suggestion": 2
+      }
+    },
+    {
+      "model": "core.vote",
+      "pk": 1,
+      "fields": {
+        "created_at": "2024-01-15T08:38:37.727Z",
+        "updated_at": "2024-01-15T08:38:37.727Z",
+        "deleted_at": null,
+        "suggestion": 1
+      }
+    },
+    {
+      "model": "core.vote",
+      "pk": 2,
+      "fields": {
+        "created_at": "2024-01-15T08:38:37.992Z",
+        "updated_at": "2024-01-15T08:38:37.992Z",
+        "deleted_at": null,
+        "suggestion": 1
+      }
+    },
+    {
+      "model": "core.vote",
+      "pk": 3,
+      "fields": {
+        "created_at": "2024-01-15T08:38:38.263Z",
+        "updated_at": "2024-01-15T08:38:38.263Z",
+        "deleted_at": null,
+        "suggestion": 1
+      }
+    },
+    {
+      "model": "core.vote",
+      "pk": 4,
+      "fields": {
+        "created_at": "2024-01-15T08:38:38.527Z",
+        "updated_at": "2024-01-15T08:38:38.527Z",
+        "deleted_at": null,
+        "suggestion": 2
+      }
+    },
+    {
+      "model": "core.vote",
+      "pk": 5,
+      "fields": {
+        "created_at": "2024-01-23T09:37:19.181Z",
+        "updated_at": "2024-01-23T09:37:19.181Z",
+        "deleted_at": null,
+        "suggestion": 1
+      }
+    }
+    ]

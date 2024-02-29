@@ -1,0 +1,32 @@
+[
+    {
+        "model": "core.board",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-02-14T12:47:09.199Z",
+            "updated_at": "2024-02-15T15:08:09.598Z",
+            "deleted_at": null,
+            "user": 1,
+            "name": "Example Board 1",
+            "logo": "tests/images/example_logo.jpg",
+            "description": "This is description for example board 1.",
+            "footer": "{'footer_text': 'This is footer text.', 'footer_extra': 'This is extra footer text.', 'contacts': {'twitter': 'www.twitter.com', 'instagram': 'www.instagram.com', 'email': None, 'discord': None, 'website': None}}",
+            "is_active": false
+        }
+    },
+    {
+        "model": "core.board",
+        "pk": 2,
+        "fields": {
+            "created_at": "2024-02-14T16:04:21.366Z",
+            "updated_at": "2024-02-19T18:14:58.905Z",
+            "deleted_at": "2024-02-19T18:14:58.904Z",
+            "user": 1,
+            "name": "Example Board 2",
+            "logo": "",
+            "description": "This is description for example board 2.",
+            "footer": "{'footer_text': 'This is footer text.', 'footer_extra': 'This is extra footer text.', 'contacts': {'twitter': 'www.twitter.com', 'instagram': None, 'email': None, 'discord': None, 'website': None}}",
+            "is_active": false
+        }
+    }
+]

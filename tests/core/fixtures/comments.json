@@ -1,0 +1,13 @@
+[
+    {
+        "model": "core.comment",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-02-23T18:41:27.646Z",
+            "updated_at": "2024-02-23T18:41:27.646Z",
+            "deleted_at": null,
+            "body": "Example comments!",
+            "suggestion": 1
+        }
+    }
+]

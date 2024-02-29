@@ -1,76 +1,67 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.urls import reverse
+from django.db.models.signals import pre_save
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import AccessToken
 
-from core.models import Board, Comment, Status, Suggestion
+from customers.models import User
 
 
 class CommentTests(APITestCase):
-    MOCK_BOARD = {
-        "name": "PixelPulse",
-        "logo": SimpleUploadedFile(
-            name="mock_logo.jpg",
-            content=open("tests/images/mock_logo.jpg", "rb").read(),
-            content_type="image/jpeg",
-        ),
-        "description": "Embark on a creative journey with our art application. Immerse yourself in a world of inspiration, connect with artists worldwide, and showcase your masterpieces. Experience the beauty of art wherever you go, only with PixelPulse.",
-    }
-    MOCK_STATUS = {"name": "Brand new!"}
-    MOCK_SUGGESTION = {
-        "title": "Enhanced Customer Engagement",
-        "description": "SkyTravel can improve customer engagement by leveraging technology and social media. Implementing a user-friendly mobile app or website with features such as real-time trip updates, personalized recommendations, and interactive travel blogs can enhance the overall customer experience.",
-        "image": SimpleUploadedFile(
-            name="mock_logo.jpg",
-            content=open("tests/images/mock_logo.jpg", "rb").read(),
-            content_type="image/jpeg",
-        ),
-    }
-    MOCK_COMMENT = {
-        "body": "The enhanced customer engagement features, like the real-time updates and personalized recommendations, made my travel experience smoother and more enjoyable."
-    }
+    fixtures = [
+        "tests/core/fixtures/customers.json",
+        "tests/core/fixtures/boards.json",
+        "tests/core/fixtures/status.json",
+        "tests/core/fixtures/suggestions.json",
+        "tests/core/fixtures/comments.json",
+        "tests/core/fixtures/votes.json",
+    ]
 
     def setUp(self) -> None:
-        self.board = Board.objects.create(**self.MOCK_BOARD)
-        self.status = Status.objects.create(board=self.board, **self.MOCK_STATUS)
-        self.suggestion = Suggestion.objects.create(
-            board=self.board, status=self.status, **self.MOCK_SUGGESTION
-        )
-        self.comment = Comment.objects.create(
-            suggestion=self.suggestion, **self.MOCK_COMMENT
-        )
+        self.user = User.objects.get(email="example@proton.me")
+        self.token = str(AccessToken.for_user(self.user))
+        self.authorization_header = "Bearer {}".format(self.token)
 
-    def test_create_comment(self) -> None:
+    def test_success_post_comment(self) -> None:
+        url = "/api/boards/1/suggestions/1/comments"
         payload = {
-            "body": "Thanks for turning a great trip into an extraordinary one!",
+            "body": "This is example commment under suggestion!",
         }
-        url = reverse("comment-list", kwargs={"id": 1})
-        response = self.client.post(url, payload)
+        response = self.client.post(
+            url, payload, HTTP_AUTHORIZATION=self.authorization_header
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictContainsSubset(payload, response.json()["data"])
 
-    def test_get_comment_list(self) -> None:
-        url = reverse("comment-list", kwargs={"id": 1})
-        response = self.client.get(url)
+    def test_success_get_comments_list(self) -> None:
+        url = "/api/boards/1/suggestions/1/comments"
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization_header)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["data"][0]["body"], self.MOCK_COMMENT["body"])
+        self.assertEqual(response.json()["data"][0]["body"], "Example comments!")
+
+    def test_unauthorized_get_comments_list(self) -> None:
+        url = "/api/boards/1/suggestions/1/comments"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_get_comment_detail(self) -> None:
-        url = reverse("comment-detail", kwargs={"id": 1, "cid": 1})
-        response = self.client.get(url)
+        url = "/api/boards/1/suggestions/1/comments/1"
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization_header)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["data"]["body"], self.MOCK_COMMENT["body"])
+        self.assertEqual(response.json()["data"]["body"], "Example comments!")
 
     def test_update_comment(self) -> None:
+        url = "/api/boards/1/suggestions/1/comments/1"
         payload = {
-            "body": "Awesome idea! I'm looking foward to try it soon.",
+            "body": "This is example comment for suggestion 1.",
         }
-        url = reverse("comment-detail", kwargs={"id": 1, "cid": 1})
-        response = self.client.put(url, payload)
+        response = self.client.put(
+            url, payload, HTTP_AUTHORIZATION=self.authorization_header
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictContainsSubset(payload, response.json()["data"])
 
     def test_delete_comment(self) -> None:
-        url = reverse("comment-detail", kwargs={"id": 1, "cid": 1})
-        response = self.client.delete(url)
+        url = "/api/boards/1/suggestions/1/comments/1"
+        response = self.client.delete(url, HTTP_AUTHORIZATION=self.authorization_header)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

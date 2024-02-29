@@ -1,7 +1,7 @@
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
-
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import HttpRequest
 from rest_framework.views import APIView
 
@@ -16,14 +16,17 @@ from core.serializers import (
 from core.viewsets import DetailView, ListView
 
 
-class BoardListView(ListView):
+class BoardListView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request: HttpRequest) -> JsonResponse:
-        objects = Board.objects.all()
+        objects = Board.objects.filter(user=request.user, deleted_at__isnull=True)
         serializer = BoardSerializer(objects, many=True)
         return JsonResponse({"data": serializer.data})
 
     def post(self, request: HttpRequest) -> JsonResponse:
-        serializer = BoardSerializer(data=request.data)
+        data = {**request.data.dict(), "user": request.user.id}
+        serializer = BoardSerializer(data=data)
         if not serializer.is_valid():
             return JsonResponse(
                 {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
@@ -33,15 +36,21 @@ class BoardListView(ListView):
         return JsonResponse({"data": BoardSerializer(object).data})
 
 
-class BoardDetailView(DetailView):
+class BoardDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request: HttpRequest, id: int) -> JsonResponse:
-        object = get_object_or_404(Board, id=id)
+        object = get_object_or_404(
+            Board, id=id, user=request.user, deleted_at__isnull=True
+        )
         serializer = BoardSerializer(object)
         return JsonResponse({"data": serializer.data})
 
     def put(self, request: HttpRequest, id: int) -> JsonResponse:
-        object = get_object_or_404(Board, id=id)
-        serializer = BoardSerializer(object, data=request.data, partial=True)
+        object = get_object_or_404(
+            Board, id=id, user=request.user, deleted_at__isnull=True
+        )
+        serializer = BoardSerializer(object, data=request.data.dict(), partial=True)
         if not serializer.is_valid():
             return JsonResponse(
                 {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
@@ -51,7 +60,9 @@ class BoardDetailView(DetailView):
         return JsonResponse({"data": BoardSerializer(object).data})
 
     def delete(self, request: HttpRequest, id: int) -> JsonResponse:
-        object = get_object_or_404(Board, id=id)
+        object = get_object_or_404(
+            Board, id=id, user=request.user, deleted_at__isnull=True
+        )
         object.soft_delete()
         return JsonResponse({}, status=status.HTTP_204_NO_CONTENT, safe=False)
 
@@ -77,14 +88,22 @@ class SuggestionDetailView(DetailView):
 
 
 class CommentListView(APIView):
-    def get(self, request: HttpRequest, id: int) -> JsonResponse:
-        suggestion = get_object_or_404(Suggestion, id=id)
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: HttpRequest, bid: int, id: int) -> JsonResponse:
+        board = get_object_or_404(
+            Board, id=bid, user=request.user, deleted_at__isnull=True
+        )
+        suggestion = get_object_or_404(Suggestion, board=board, id=id)
         comments = Comment.objects.filter(suggestion=suggestion)
         serializer = CommentSerializer(comments, many=True)
         return JsonResponse({"data": serializer.data})
 
-    def post(self, request: HttpRequest, id: int) -> JsonResponse:
-        suggestion = get_object_or_404(Suggestion, id=id)
+    def post(self, request: HttpRequest, bid: int, id: int) -> JsonResponse:
+        board = get_object_or_404(
+            Board, id=bid, user=request.user, deleted_at__isnull=True
+        )
+        suggestion = get_object_or_404(Suggestion, board=board, id=id)
         serializer = CommentSerializer(data=request.data)
         if not serializer.is_valid():
             return JsonResponse(
@@ -96,14 +115,22 @@ class CommentListView(APIView):
 
 
 class CommentDetailView(APIView):
-    def get(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
-        suggestion = get_object_or_404(Suggestion, id=id)
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: HttpRequest, bid: int, id: int, cid: int) -> JsonResponse:
+        board = get_object_or_404(
+            Board, id=bid, user=request.user, deleted_at__isnull=True
+        )
+        suggestion = get_object_or_404(Suggestion, board=board, id=id)
         comment = get_object_or_404(Comment, suggestion=suggestion, id=cid)
         serializer = CommentSerializer(comment)
         return JsonResponse({"data": serializer.data})
 
-    def put(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
-        suggestion = get_object_or_404(Suggestion, id=id)
+    def put(self, request: HttpRequest, bid: int, id: int, cid: int) -> JsonResponse:
+        board = get_object_or_404(
+            Board, id=bid, user=request.user, deleted_at__isnull=True
+        )
+        suggestion = get_object_or_404(Suggestion, board=board, id=id)
         comment = get_object_or_404(Comment, suggestion=suggestion, id=cid)
         serializer = CommentSerializer(comment, data=request.data, partial=True)
         if not serializer.is_valid():
@@ -114,22 +141,33 @@ class CommentDetailView(APIView):
         comment = serializer.save()
         return JsonResponse({"data": CommentSerializer(comment).data})
 
-    def delete(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
-        suggestion = get_object_or_404(Suggestion, id=id)
+    def delete(self, request: HttpRequest, bid: int, id: int, cid: int) -> JsonResponse:
+        board = get_object_or_404(
+            Board, id=bid, user=request.user, deleted_at__isnull=True
+        )
+        suggestion = get_object_or_404(Suggestion, board=board, id=id)
         comment = get_object_or_404(Comment, suggestion=suggestion, id=cid)
         comment.soft_delete()
         return JsonResponse({}, status=status.HTTP_204_NO_CONTENT, safe=False)
 
 
 class VoteListView(APIView):
-    def get(self, request: HttpRequest, id: int) -> JsonResponse:
-        suggestion = get_object_or_404(Suggestion, id=id)
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: HttpRequest, bid: int, id: int) -> JsonResponse:
+        board = get_object_or_404(
+            Board, id=bid, user=request.user, deleted_at__isnull=True
+        )
+        suggestion = get_object_or_404(Suggestion, board=board, id=id)
         votes = Vote.objects.filter(suggestion=suggestion)
         serializer = VoteSerializer(votes, many=True)
         return JsonResponse({"data": serializer.data})
 
-    def post(self, request: HttpRequest, id: int) -> JsonResponse:
-        suggestion = get_object_or_404(Suggestion, id=id)
+    def post(self, request: HttpRequest, bid: int, id: int) -> JsonResponse:
+        board = get_object_or_404(
+            Board, id=bid, user=request.user, deleted_at__isnull=True
+        )
+        suggestion = get_object_or_404(Suggestion, board=board, id=id)
         serializer = VoteSerializer(data=request.data)
         if not serializer.is_valid():
             return JsonResponse(
@@ -141,14 +179,22 @@ class VoteListView(APIView):
 
 
 class VoteDetailView(APIView):
-    def get(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
-        suggestion = get_object_or_404(Suggestion, id=id)
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: HttpRequest, bid: int, id: int, cid: int) -> JsonResponse:
+        board = get_object_or_404(
+            Board, id=bid, user=request.user, deleted_at__isnull=True
+        )
+        suggestion = get_object_or_404(Suggestion, board=board, id=id)
         vote = get_object_or_404(Vote, suggestion=suggestion, id=cid)
         serializer = VoteSerializer(vote)
         return JsonResponse({"data": serializer.data})
 
-    def delete(self, request: HttpRequest, id: int, cid: int) -> JsonResponse:
-        suggestion = get_object_or_404(Suggestion, id=id)
+    def delete(self, request: HttpRequest, bid: int, id: int, cid: int) -> JsonResponse:
+        board = get_object_or_404(
+            Board, id=bid, user=request.user, deleted_at__isnull=True
+        )
+        suggestion = get_object_or_404(Suggestion, board=board, id=id)
         vote = get_object_or_404(Vote, suggestion=suggestion, id=cid)
         vote.soft_delete()
         return JsonResponse({}, status=status.HTTP_204_NO_CONTENT, safe=False)

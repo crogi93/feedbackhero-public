@@ -1,14 +1,14 @@
+import re
+from datetime import datetime
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from customers.managers import *
 from core.basemodels import TimestampMixin
-
-from datetime import datetime
-import re
+from customers.managers import *
 
 
 class PasswordValidator:

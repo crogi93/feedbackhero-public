@@ -1,7 +1,7 @@
 import django_filters
+from django.db import models
 
 from core.models import Suggestion
-from django.db import models
 
 
 class SuggestionFilter(django_filters.FilterSet):

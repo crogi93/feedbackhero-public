@@ -1,0 +1,16 @@
+[
+    {
+        "model": "core.suggestion",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-02-23T07:19:16.531Z",
+            "updated_at": "2024-02-23T07:19:16.531Z",
+            "deleted_at": null,
+            "board": 1,
+            "title": "Example title",
+            "description": "Example description!",
+            "image": "tests/images/example_logo.jpg",
+            "status": null
+        }
+    }
+]

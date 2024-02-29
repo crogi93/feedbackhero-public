@@ -1,6 +1,7 @@
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from core.models import Board, Comment, Suggestion, Status, Vote
+from core.models import Board, Comment, Status, Suggestion, Vote
 
 
 class BaseSerializer(serializers.ModelSerializer):
@@ -12,7 +13,14 @@ class BaseSerializer(serializers.ModelSerializer):
 class StatusSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = Status
-        read_only_fields = BaseSerializer.Meta.read_only_fields + ["board"]
+
+    def validate_name(self, value):
+        board = self.initial_data.get("board")
+        if Status.objects.filter(board=board, name=value).exists():
+            raise serializers.ValidationError(
+                "A status with this name already exists for this board."
+            )
+        return value
 
 
 class BoardSerializer(BaseSerializer):
@@ -29,7 +37,14 @@ class BoardSerializer(BaseSerializer):
 class SuggestionSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = Suggestion
-        read_only_fields = BaseSerializer.Meta.read_only_fields + ["board"]
+
+    def validate_title(self, value):
+        board = self.initial_data.get("board")
+        if Suggestion.objects.filter(board=board, title=value).exists():
+            raise serializers.ValidationError(
+                "A status with this name already exists for this board."
+            )
+        return value
 
     def to_internal_value(self, data):
         if "image" in data:

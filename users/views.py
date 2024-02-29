@@ -2,12 +2,11 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.base import View
 
-from core.serializers import *
 from core.models import *
-
+from core.serializers import *
 from users.filters import *
 
 
