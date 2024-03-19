@@ -1,24 +1,26 @@
+//notification fade out
 document.addEventListener('DOMContentLoaded', () => {
-  const notification = document.getElementById('notification');
-  if (notification) {
-    const deleteButton = notification.querySelector('.delete');
+    const notification = document.getElementById('notification');
+    if (notification) {
+      const deleteButton = notification.querySelector('.delete');
 
-    function closeNotification() {
-      notification.classList.add('fade-out');
-      setTimeout(() =>{
-        notification.classList.add('is-hidden');
-        notification.classList.remove('fade-out');
-      }, 500);
+      function closeNotification() {
+        notification.classList.add('fade-out');
+        setTimeout(() =>{
+          notification.classList.add('is-hidden');
+          notification.classList.remove('fade-out');
+        }, 500);
+      }
+
+      deleteButton.addEventListener('click', () => {
+        closeNotification();
+      });
+
+      setTimeout(closeNotification, 3000);
     }
-
-    deleteButton.addEventListener('click', () => {
-      closeNotification();
-    });
-
-    setTimeout(closeNotification, 3000);
-  }
 });
 
+// file input name
 document.addEventListener('DOMContentLoaded', () => {
   (document.querySelectorAll('.file-input') || []).forEach(fileInput => {
     fileInput.onchange = () => {
@@ -29,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   });
 });
-
+// modal
 document.addEventListener('DOMContentLoaded', () => {
     function openModal($el) {
       $el.classList.add('is-active');
@@ -68,23 +70,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 });
+//dropdown dashboard
+// document.addEventListener('DOMContentLoaded', () => {
+//     const dropdownButton = document.getElementById('dropdown-button');
+//     const dropdownDashboard = document.getElementById('dropdown-dashboard');
 
-document.addEventListener('DOMContentLoaded', () => {
-    const dropdownButton = document.getElementById('dropdown-button');
-    const dropdownDashboard = document.getElementById('dropdown-dashboard');
+//     dropdownButton.addEventListener('click', () => {
+//       console.log(dropdownDashboard)
+//       dropdownDashboard.classList.toggle('is-active');
+//     });
 
-    dropdownButton.addEventListener('click', () => {
-      console.log(dropdownDashboard)
-      dropdownDashboard.classList.toggle('is-active');
-    });
-
-    document.addEventListener('click', function (event) {
-      if (!dropdownDashboard.contains(event.target)) {
-        dropdownDashboard.classList.remove('is-active');
-      }
-    });
-  });
-
+//     document.addEventListener('click', function (event) {
+//       if (!dropdownDashboard.contains(event.target)) {
+//         dropdownDashboard.classList.remove('is-active');
+//       }
+//     });
+//   });
+//dropdown-createboard-socialmedia
 document.addEventListener('DOMContentLoaded', function () {
   const dropdown = document.getElementById('dropdown-create-contact');
   const trigger = dropdown.querySelector('.dropdown-trigger');
@@ -101,6 +103,8 @@ document.addEventListener('DOMContentLoaded', function () {
       dropdown.classList.remove('is-active');
     }
   });
+
+
 
   const dropdownItems = document.querySelectorAll('.dropdown-item');
   dropdownItems.forEach(function (item) {
@@ -146,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+//navbar-dashboard-active
 document.addEventListener('DOMContentLoaded', function () {
     const currentUrl = window.location.href;
     const dashboardLink = document.getElementById('dashboard-link');
@@ -157,3 +162,17 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
+
+//select icon picker
+document.addEventListener("DOMContentLoaded", function () {
+var selectElements = document.querySelectorAll(".select-icon-picker select");
+
+    selectElements.forEach(function(selectElement) {
+        var hiddenInput = selectElement.parentElement.querySelector(".select-hidden-input");
+
+        selectElement.addEventListener("change", function () {
+            hiddenInput.value = selectElement.value;
+
+        });
+    });
+});

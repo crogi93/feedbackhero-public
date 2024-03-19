@@ -18,9 +18,14 @@
           {% endif %}
             <h2 class="title is-4">{{ board.name }}</h2>
         </div>
-        <div class="level-left">
+        <div class="level-item">
           <a class="button is-medium is-primary is-static">subs: 30 days</a>
         </div>
+        {% if board.is_active %}
+        <div class="level-item">
+          <a class="button is-medium is-primary">Open board</a>
+        </div>
+        {% endif %}
       </div>
       <div class="level-right">
         {% if board.is_active %}
@@ -77,7 +82,7 @@
           <a class="button is-medium is-primary">Users</a>
         </div>
         <div class="level-item">
-          <a class="button is-medium is-primary">Status</a>
+          <a href="{% url 'dashboard_statusboard' id=board.id %}" class="button is-medium is-primary">Status</a>
         </div>
       </div>
       <div class="level-right">

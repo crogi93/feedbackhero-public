@@ -1,13 +1,13 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import (
     PasswordResetTokenGenerator,
     default_token_generator,
 )
 from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_bytes, force_str
@@ -15,7 +15,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import View
 
-from core.models import Suggestion
+from core.models import Board, Status
 from customers import emails
 from customers.forms import *
 from customers.tokens import account_activation_token
@@ -159,13 +159,13 @@ class PasswordResetConfirmView(View):
         )
 
 
-@login_required(login_url=reverse_lazy("login"))
+@login_required
 def logout_view(request):
     logout(request)
     return redirect("login")
 
 
-@method_decorator(login_required(login_url=reverse_lazy("login")), name="dispatch")
+@method_decorator(login_required, name="dispatch")
 class Dashboard(View):
     template_name = "customers/dashboard_general_page.html"
 
@@ -180,7 +180,7 @@ class Dashboard(View):
         return render(request, self.template_name, context)
 
 
-@login_required(login_url=reverse_lazy("login"))
+@login_required
 @require_http_methods(["POST"])
 def delete_board(request, id):
     board = get_object_or_404(Board, user=request.user, deleted_at__isnull=True, id=id)
@@ -195,7 +195,7 @@ def delete_board(request, id):
     return redirect("dashboard")
 
 
-@login_required(login_url=reverse_lazy("login"))
+@login_required
 @require_http_methods(["GET"])
 def active_board(request, id):
     board = get_object_or_404(Board, user=request.user, deleted_at__isnull=True, id=id)
@@ -205,17 +205,17 @@ def active_board(request, id):
     return redirect("dashboard")
 
 
-@login_required(login_url=reverse_lazy("login"))
+@login_required
 @require_http_methods(["GET"])
 def deactive_board(request, id):
     board = get_object_or_404(Board, user=request.user, deleted_at__isnull=True, id=id)
     board.is_active = False
     board.save()
-    messages.success(request, "Your board is offline now!")
+    messages.warning(request, "Your board is offline now!")
     return redirect("dashboard")
 
 
-@method_decorator(login_required(login_url=reverse_lazy("login")), name="dispatch")
+@method_decorator(login_required, name="dispatch")
 class Profile(View):
     template_name = "customers/dashboard_profile_page.html"
 
@@ -224,7 +224,7 @@ class Profile(View):
         return render(request, self.template_name, context)
 
 
-@method_decorator(login_required(login_url=reverse_lazy("login")), name="dispatch")
+@method_decorator(login_required, name="dispatch")
 class CustomerSettings(View):
     template_name = "customers/dashboard_customer_settings_page.html"
 
@@ -235,7 +235,7 @@ class CustomerSettings(View):
         return render(request, self.template_name, context)
 
 
-@method_decorator(login_required(login_url=reverse_lazy("login")), name="dispatch")
+@method_decorator(login_required, name="dispatch")
 class CreateBoard(View):
     template_name = "customers/dashboard_create_board_page.html"
 
@@ -272,7 +272,7 @@ class PreviewBoard(View):
         return render(request, self.template_name)
 
 
-@login_required(login_url=reverse_lazy("login"))
+@login_required
 @require_http_methods(["POST"])
 def change_password(request):
     data = {**request.POST.dict(), "email": request.user.email}
@@ -289,10 +289,10 @@ def change_password(request):
     return redirect("dashboard_settings")
 
 
-@login_required(login_url=reverse_lazy("login"))
+@login_required
 @require_http_methods(["POST"])
 def change_email(request):
-    form = ChangeEmailForm(request.POST)
+    form = ChangeEmailForm(request.POST.dict())
 
     if form.is_valid():
         uidb64 = urlsafe_base64_encode(force_bytes(request.user.pk))
@@ -337,3 +337,110 @@ class ConfirmNewEmail(View):
 
         messages.error(request, "Activation link is invalid!")
         return redirect("dashboard_settings")
+
+
+@method_decorator(login_required, name="dispatch")
+class StatusBoard(View):
+    template_name = "customers/dashboard_status_board_page.html"
+
+    def get(self, request, id):
+        board = get_object_or_404(
+            Board, user=request.user, deleted_at__isnull=True, id=id
+        )
+        statuses = get_list_or_404(
+            Status.objects.filter(board=board).annotate(
+                suggestion_count=Count("suggestion", distinct=True)
+            )
+        )
+        default_status = next(
+            (status for status in statuses if status.is_default), None
+        )
+        context = {
+            "board": board,
+            "statuses": statuses,
+            "default_status": default_status,
+        }
+        return render(request, self.template_name, context=context)
+
+    def post(self, request, id):
+        board = get_object_or_404(
+            Board, user=request.user, deleted_at__isnull=True, id=id
+        )
+        data = {**request.POST.dict(), "board": board}
+        form = CreateStatusForm(data)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Status have been created")
+            return redirect(reverse("dashboard_statusboard", kwargs={"id": id}))
+
+        [messages.warning(request, errors[0]) for errors in form.errors.values()]
+        return redirect(reverse("dashboard_statusboard", kwargs={"id": id}))
+
+
+@login_required
+@require_http_methods(["POST"])
+def set_default_status(request, bid):
+    board = get_object_or_404(Board, user=request.user, deleted_at__isnull=True, id=bid)
+    form = SetDefaultStatusForm(request.POST)
+    if form.is_valid():
+        status_id = form.cleaned_data["id"]
+        if status_id == 0:
+            Status.objects.filter(board=board).update(is_default=False)
+            messages.success(request, "None of status has default value.")
+            return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+
+        status = get_object_or_404(Status, id=status_id)
+        Status.objects.filter(board=board).update(is_default=False)
+        status.is_default = True
+        status.save()
+        messages.success(request, "New default status have been set.")
+        return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+
+    messages.warning(request, "Something went wrong")
+    return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+
+
+@login_required
+@require_http_methods(["GET"])
+def delete_status(request, bid, id):
+    board = get_object_or_404(Board, user=request.user, deleted_at__isnull=True, id=bid)
+    status = get_object_or_404(Status, id=id, board=board)
+    status.delete()
+    messages.success(request, "Status has been deleted successfully.")
+    return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+
+
+@login_required
+@require_http_methods(["POST"])
+def rename_status(request, bid, id):
+    form = RenameStatusForm(request.POST)
+    if form.is_valid():
+        board = get_object_or_404(
+            Board, user=request.user, deleted_at__isnull=True, id=bid
+        )
+        status = get_object_or_404(Status, id=id, board=board)
+        status.name = form.cleaned_data["name"]
+        status.save()
+        messages.success(request, "Status name have been renamed")
+        return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+
+    [messages.warning(request, errors[0]) for errors in form.errors.values()]
+    return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+
+
+@login_required
+@require_http_methods(["POST"])
+def iconset_status(request, bid, id):
+    form = IconStatusForm(request.POST.dict())
+    if form.is_valid():
+        board = get_object_or_404(
+            Board, user=request.user, deleted_at__isnull=True, id=bid
+        )
+        status = get_object_or_404(Status, id=id, board=board)
+        status.icon = form.cleaned_data["icon"]
+        status.save()
+        messages.success(request, "Status icon have been set.")
+        return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+
+    [messages.warning(request, errors[0]) for errors in form.errors.values()]
+    return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))

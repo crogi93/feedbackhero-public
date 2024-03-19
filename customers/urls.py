@@ -20,6 +20,31 @@ urlpatterns = [
     path("dashboard/changepassword", change_password, name="dashboard_changepassword"),
     path("dashboard/changeemail", change_email, name="dashboard_changeemail"),
     path("dashboard/createboard", CreateBoard.as_view(), name="dashboard_createboard"),
+    path(
+        "dashboard/statusboard/<int:id>",
+        StatusBoard.as_view(),
+        name="dashboard_statusboard",
+    ),
+    path(
+        "dashboard/statusboard/<int:bid>/default",
+        set_default_status,
+        name="dashboard_setdefaultstatus",
+    ),
+    path(
+        "dashboard/statusboard/<int:bid>/iconset/<int:id>",
+        iconset_status,
+        name="dashboard_iconsetstatus",
+    ),
+    path(
+        "dashboard/statusboard/<int:bid>/rename/<int:id>",
+        rename_status,
+        name="dashboard_renamestatus",
+    ),
+    path(
+        "dashboard/statusboard/<int:bid>/delete/<int:id>",
+        delete_status,
+        name="dashboard_deletestatus",
+    ),
     path("dashboard/deleteboard/<int:id>", delete_board, name="dashboard_deleteboard"),
     path("dashboard/activeboard/<int:id>", active_board, name="dashboard_boardactive"),
     path(

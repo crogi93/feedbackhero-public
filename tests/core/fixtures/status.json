@@ -6,6 +6,8 @@
             "created_at": "2024-02-22T19:37:49.478Z",
             "updated_at": "2024-02-22T19:37:49.478Z",
             "deleted_at": null,
+            "is_default": false,
+            "icon": null,
             "name": "Example",
             "board": 1
         }

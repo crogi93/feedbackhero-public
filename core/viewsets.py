@@ -23,7 +23,7 @@ class ListView(APIView):
         board = get_object_or_404(
             Board, id=bid, user=request.user, deleted_at__isnull=True
         )
-        serializer = self.serializer_class(data={**request.data.dict(), "board": bid})
+        serializer = self.serializer_class(data={**request.data, "board": bid})
         if not serializer.is_valid():
             return JsonResponse(
                 {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST

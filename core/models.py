@@ -3,7 +3,7 @@ import uuid
 
 from django.db import models
 
-from core.basemodels import TimestampMixin
+from core.basemodels import IconField, TimestampMixin
 from customers.models import User
 
 
@@ -30,17 +30,20 @@ class Board(TimestampMixin):
 class Status(TimestampMixin):
     name = models.CharField(max_length=255)
     board = models.ForeignKey(Board, related_name="status", on_delete=models.DO_NOTHING)
+    icon = IconField(null=True, blank=True)
+    is_default = models.BooleanField(default=False, blank=True, null=True)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
                 fields=["board", "name"], name="unique_statusname_per_board"
-            )
+            ),
+            models.UniqueConstraint(
+                fields=["board", "is_default"],
+                condition=models.Q(is_default=True),
+                name="unique_default_status_per_board",
+            ),
         ]
-
-    @property
-    def full_name(self) -> str:
-        return self.id + self.name
 
 
 class Suggestion(TimestampMixin):

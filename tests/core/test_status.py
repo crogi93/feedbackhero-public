@@ -24,7 +24,7 @@ class StatusTests(APITestCase):
     def test_success_post_status(self) -> None:
         url = "/api/boards/1/status"
         payload = {
-            "name": "New",
+            "name": "New example",
         }
         response = self.client.post(
             url, payload, HTTP_AUTHORIZATION=self.authorization_header

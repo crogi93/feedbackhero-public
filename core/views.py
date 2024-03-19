@@ -25,7 +25,7 @@ class BoardListView(APIView):
         return JsonResponse({"data": serializer.data})
 
     def post(self, request: HttpRequest) -> JsonResponse:
-        data = {**request.data.dict(), "user": request.user.id}
+        data = {**request.data, "user": request.user.id}
         serializer = BoardSerializer(data=data)
         if not serializer.is_valid():
             return JsonResponse(
@@ -50,7 +50,7 @@ class BoardDetailView(APIView):
         object = get_object_or_404(
             Board, id=id, user=request.user, deleted_at__isnull=True
         )
-        serializer = BoardSerializer(object, data=request.data.dict(), partial=True)
+        serializer = BoardSerializer(object, data=request.data, partial=True)
         if not serializer.is_valid():
             return JsonResponse(
                 {"data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST

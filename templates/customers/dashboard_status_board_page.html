@@ -1,0 +1,140 @@
+{% extends "customers/components/base_dashboard_view.html" %}
+{% load static %}
+
+{% block title %}FeedbackHero - dashboard{% endblock %}
+{% block content %}
+<div class="title">{{ board.name }} - status settings</div>
+<div class="box">
+  <form action="{% url 'dashboard_setdefaultstatus' bid=board.id %}" method="POST">
+    {% csrf_token %}
+    <div class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <label class="label">Default status</label>
+        </div>
+        <div class="level-item">
+          <span class="button is-static">{% if default_status %}{{ default_status.name }} {% else %} None {% endif %}</span>
+        </div>
+        <div class="level-item" style="margin-left: 50px">
+          <div class="field-body">
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select name="id" id="status-default">
+                    <option value="0">None</option>
+                    {% for status in statuses %}
+                    <option value="{{ status.id }}">{{ status.name }}</option>
+                    {% endfor %}
+                </select>
+               </div>
+            </div>
+          </div>
+        </div>
+        <div class="level-item">
+          <button type="submit" class="button is-primary">
+            Set default
+          </button>
+        </div>
+      </div>
+    </div>
+    <p class="help">This status will be assigned to the newly created suggestion.</p>
+  </form>
+</div>
+<div class="card events-card">
+  <div class="card-table">
+    <div class="content">
+      <table class="table is-fullwidth is-striped">
+        <thead>
+          <tr>
+            <th>Icon</th>
+            <th>Name</th>
+            <th>Suggestion count</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+
+          </tr>
+        </thead>
+        <tbody>
+            {% for status in statuses %}
+            <tr>
+                <td width="2%" class="has-text-centered">
+                  {% if status.icon %}<i class="{{ status.get_icon_display }}"></i>{% endif %}
+                </td>
+                <td width="10%">{{ status.name }}</td>
+                <td width="10%" class="has-text-centered">{{ status.suggestion_count }}</td>
+                <form action="{% url 'dashboard_renamestatus' bid=board.id id=status.id %}" method="POST">
+                  {% csrf_token %}
+                  <td witdth="15%">
+                    <div class="field">
+                      <div class="control">
+                        <input type="text" autocomplete="name" name="name" class="input" required>
+                      </div>
+                      <input type="hidden" name="board" value="{{ board.id }}">
+                    </div>
+                  </td>
+                  <td><button type="submit" class="button is-info">Rename</button></td>
+                </form>
+                <form action="{% url 'dashboard_iconsetstatus' bid=board.id id=status.id %}" method="POST">
+                  {% csrf_token %}
+                  <td width="40%">
+                    <button type="submit" class="button is-info">Set icon</button>
+                    {% include "customers/components/select_icons.html" with id="{{ status.id }}"  %}
+                  </td>
+                </form>
+                <td class="level-right"><a class="button is-danger" href="{% url 'dashboard_deletestatus' bid=board.id id=status.id %}">Delete</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="box">
+  <form action="{% url 'dashboard_statusboard' id=board.id %}" method="POST">
+    <label class="title is-4">Create new status</label>
+    <hr>
+    {% csrf_token %}
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Name</label>
+      </div>
+      <div class="field-body">
+        <div class="field is-narrow">
+          <div class="control">
+            <input type="text" autocomplete="status-name" name="name" class="input" required>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Icon</label>
+      </div>
+      <div class="field-body">
+        {% comment %} <div class="level"> {% endcomment %}
+          {% include "customers/components/select_icons.html" with id="creation" %}
+
+
+        {% comment %} </div> {% endcomment %}
+      </div>
+    </div>
+    <div class="field is-horizontal">
+      <div class="field-label is-normal"></div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <button type="submit" class="button is-primary">
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/scripts.js' %}"></script>
+{% endblock %}

@@ -22,6 +22,15 @@ class StatusSerializer(BaseSerializer):
             )
         return value
 
+    def validate_is_default(self, value):
+        board_id = self.initial_data.get("board")
+        if value:
+            if Status.objects.filter(board_id=board_id, is_default=True).exists():
+                raise serializers.ValidationError(
+                    "A default status already exists for this board."
+                )
+        return value
+
 
 class BoardSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):

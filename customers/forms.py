@@ -3,7 +3,7 @@ import json
 from django import forms
 from django.contrib.auth import authenticate
 
-from core.models import Board
+from core.models import *
 from customers.models import User
 
 
@@ -151,3 +151,25 @@ class CreateBoardForm(forms.ModelForm):
     class Meta:
         model = Board
         fields = ["user", "name", "logo", "description", "footer"]
+
+
+class SetDefaultStatusForm(forms.Form):
+    id = forms.IntegerField()
+
+
+class RenameStatusForm(forms.ModelForm):
+    class Meta:
+        model = Status
+        fields = ["name", "board"]
+
+
+class IconStatusForm(forms.ModelForm):
+    class Meta:
+        model = Status
+        fields = ["icon"]
+
+
+class CreateStatusForm(forms.ModelForm):
+    class Meta:
+        model = Status
+        fields = ["name", "icon", "board"]

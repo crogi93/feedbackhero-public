@@ -163,6 +163,14 @@ REST_FRAMEWORK = {
     ],
 }
 
+# Login path
+LOGIN_REDIRECT_URL = "/login"
+LOGIN_URL = "/login"
+
+
+# Icon yaml file:
+ICON_YAML_FILE = "icons.yml"
+
 # Simple JWT
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
