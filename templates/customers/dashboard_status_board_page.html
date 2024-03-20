@@ -13,7 +13,7 @@
           <label class="label">Default status</label>
         </div>
         <div class="level-item">
-          <span class="button is-static">{% if default_status %}{{ default_status.name }} {% else %} None {% endif %}</span>
+          <span class="button is-static">{% if board.status_default %}{{ board.status_default.name }} {% else %} None {% endif %}</span>
         </div>
         <div class="level-item" style="margin-left: 50px">
           <div class="field-body">
@@ -41,6 +41,7 @@
 </div>
 <div class="card events-card">
   <div class="card-table">
+    {% if statuses %}
     <div class="content">
       <table class="table is-fullwidth is-striped">
         <thead>
@@ -88,6 +89,7 @@
         </tbody>
       </table>
     </div>
+    {% endif %}
   </div>
 </div>
 <div class="box">

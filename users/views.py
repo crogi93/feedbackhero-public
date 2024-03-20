@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, get_list_or_404, redirect, render
 from django.views.generic.base import View
 
 from core.models import *
@@ -13,8 +13,8 @@ from users.filters import *
 class SuggestionListView(View):
     template_name = "users/suggestion_list_view.html"
 
-    def get(self, request):
-        board = get_object_or_404(Board, id=2)
+    def get(self, request, id):
+        board = get_object_or_404(Board, id=id, deleted_at__isnull=True, is_active=True)
         statuses = Status.objects.filter(board=board).annotate(
             sum_suggestions=Count(
                 "suggestion", filter=Q(suggestion__board=board), distinct=True
@@ -28,7 +28,6 @@ class SuggestionListView(View):
 
         filter = SuggestionFilter(request.GET, queryset=suggestions)
         paginator = Paginator(filter.qs, per_page=settings.PAGINATION_LIMIT_SUGGESTIONS)
-
         page_number = request.GET.get("page")
         page_suggestions = paginator.get_page(page_number)
         context = {
@@ -43,8 +42,10 @@ class SuggestionListView(View):
 class SuggestionDetailView(View):
     template_name = "users/suggestion_detail_view.html"
 
-    def get(self, request, id):
-        board = get_object_or_404(Board, id=2)
+    def get(self, request, bid, id):
+        board = get_object_or_404(
+            Board, id=bid, deleted_at__isnull=True, is_active=True
+        )
         suggestion = (
             Suggestion.objects.filter(id=id).annotate(
                 sum_votes=Count("votes", distinct=True),
@@ -64,49 +65,53 @@ class SuggestionDetailView(View):
         }
         return render(request, self.template_name, context)
 
-    def post(self, request, id):
+    def post(self, request, bid, id):
         suggestion = get_object_or_404(Suggestion, id=id)
         data = {**request.POST.dict()}
-        comment = CommentSerializer(data=data)
-        if comment.is_valid():
-            comment.save(suggestion=suggestion)
+        serializer = CommentSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save(suggestion=suggestion)
             messages.success(request, "Your comment have been created.")
-            return redirect("suggestionsdetailview", id=id)
+            return redirect("suggestionsdetailview", bid=bid, id=id)
 
-        messages.warning(request, "Something went wrong. Please try again!")
-        return redirect("suggestionsdetailview", id=id)
+        [messages.warning(request, errors[0]) for errors in serializer.errors.values()]
+        return redirect("suggestionsdetailview", bid=bid, id=id)
 
 
 class SuggestionCreateView(View):
     template_name = "users/suggestion_create_view.html"
 
-    def get(self, request):
-        board = get_object_or_404(Board, id=1)
+    def get(self, request, id):
+        board = get_object_or_404(Board, id=id, deleted_at__isnull=True, is_active=True)
         context = {
             "board": board,
         }
         return render(request, self.template_name, context)
 
-    def post(self, request):
-        board = get_object_or_404(Board, id=2)
-        data = {**request.POST.dict(), **request.FILES.dict()}
-        suggestion = SuggestionSerializer(data=data)
-        if suggestion.is_valid():
-            suggestion.save(board=board)
+    def post(self, request, id):
+        board = get_object_or_404(Board, id=id, is_active=True)
+        data = {
+            **request.POST.dict(),
+            **request.FILES.dict(),
+            "status": board.status_default.id if board.status_default else None,
+        }
+        serializer = SuggestionSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save(board=board)
             messages.success(request, "Your suggestion have been submited.")
-            return redirect("suggestionslistview")
+            return redirect("suggestionslistview", id=id)
 
-        messages.warning(request, "Something went wrong. Please try again!")
-        return redirect("suggestionscreateview")
+        [messages.warning(request, errors[0]) for errors in serializer.errors.values()]
+        return redirect("suggestionscreateview", id=id)
 
 
-def voteup_suggestion(request, id):
+def voteup_suggestion(request, bid, id):
     suggestion = get_object_or_404(Suggestion, id=id)
     serializer = VoteSerializer(data={"suggestion": suggestion})
     if serializer.is_valid():
         serializer.save(suggestion=suggestion)
         messages.success(request, "Your suggestion have been counted.")
-        return redirect("suggestionsdetailview", id=id)
+        return redirect("suggestionsdetailview", bid=bid, id=id)
 
-    messages.warning(request, "Something went wrong. Please try again!")
-    return redirect("suggestionsdetailview", id=id)
+    [messages.warning(request, errors[0]) for errors in serializer.errors.values()]
+    return redirect("suggestionsdetailview", bid=bid, id=id)

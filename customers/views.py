@@ -7,8 +7,8 @@ from django.contrib.auth.tokens import (
     default_token_generator,
 )
 from django.db.models import Count, Q
-from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
-from django.urls import reverse, reverse_lazy
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -147,16 +147,10 @@ class PasswordResetConfirmView(View):
                 return redirect("login")
 
             [messages.warning(request, errors[0]) for errors in form.errors.values()]
-            return redirect(
-                reverse(
-                    "resetpassword_confirm", kwargs={"uidb64": uidb64, "token": token}
-                )
-            )
+            return redirect("resetpassword_confirm", uidb64=uidb64, token=token)
 
         messages.error(request, "The password reset link is invalid or has expired.")
-        return redirect(
-            reverse("resetpassword_confirm", kwargs={"uidb64": uidb64, "token": token})
-        )
+        return redirect("resetpassword_confirm", uidb64=uidb64, token=token)
 
 
 @login_required
@@ -347,18 +341,12 @@ class StatusBoard(View):
         board = get_object_or_404(
             Board, user=request.user, deleted_at__isnull=True, id=id
         )
-        statuses = get_list_or_404(
-            Status.objects.filter(board=board).annotate(
-                suggestion_count=Count("suggestion", distinct=True)
-            )
-        )
-        default_status = next(
-            (status for status in statuses if status.is_default), None
+        statuses = Status.objects.filter(board=board).annotate(
+            suggestion_count=Count("suggestion", distinct=True)
         )
         context = {
             "board": board,
             "statuses": statuses,
-            "default_status": default_status,
         }
         return render(request, self.template_name, context=context)
 
@@ -371,10 +359,10 @@ class StatusBoard(View):
         if form.is_valid():
             form.save()
             messages.success(request, "Status have been created")
-            return redirect(reverse("dashboard_statusboard", kwargs={"id": id}))
+            return redirect("dashboard_statusboard", id=id)
 
         [messages.warning(request, errors[0]) for errors in form.errors.values()]
-        return redirect(reverse("dashboard_statusboard", kwargs={"id": id}))
+        return redirect("dashboard_statusboard", id=id)
 
 
 @login_required
@@ -385,19 +373,19 @@ def set_default_status(request, bid):
     if form.is_valid():
         status_id = form.cleaned_data["id"]
         if status_id == 0:
-            Status.objects.filter(board=board).update(is_default=False)
+            board.status_default = None
+            board.save()
             messages.success(request, "None of status has default value.")
-            return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+            return redirect("dashboard_statusboard", id=bid)
 
-        status = get_object_or_404(Status, id=status_id)
-        Status.objects.filter(board=board).update(is_default=False)
-        status.is_default = True
-        status.save()
+        status = get_object_or_404(Status, board=board, id=status_id)
+        board.status_default = status
+        board.save()
         messages.success(request, "New default status have been set.")
-        return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+        return redirect("dashboard_statusboard", id=bid)
 
     messages.warning(request, "Something went wrong")
-    return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+    return redirect("dashboard_statusboard", id=bid)
 
 
 @login_required
@@ -407,7 +395,7 @@ def delete_status(request, bid, id):
     status = get_object_or_404(Status, id=id, board=board)
     status.delete()
     messages.success(request, "Status has been deleted successfully.")
-    return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+    return redirect("dashboard_statusboard", id=bid)
 
 
 @login_required
@@ -422,10 +410,10 @@ def rename_status(request, bid, id):
         status.name = form.cleaned_data["name"]
         status.save()
         messages.success(request, "Status name have been renamed")
-        return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+        return redirect("dashboard_statusboard", id=bid)
 
     [messages.warning(request, errors[0]) for errors in form.errors.values()]
-    return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+    return redirect("dashboard_statusboard", id=bid)
 
 
 @login_required
@@ -440,7 +428,7 @@ def iconset_status(request, bid, id):
         status.icon = form.cleaned_data["icon"]
         status.save()
         messages.success(request, "Status icon have been set.")
-        return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+        return redirect("dashboard_statusboard", id=bid)
 
     [messages.warning(request, errors[0]) for errors in form.errors.values()]
-    return redirect(reverse("dashboard_statusboard", kwargs={"id": bid}))
+    return redirect("dashboard_statusboard", id=bid)

@@ -2,4 +2,7 @@
 /media/images/*
 __pycache__
 *.sqlite3
-
+/env
+*.env
+*.pyc
+.vscode

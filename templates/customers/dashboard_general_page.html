@@ -23,7 +23,7 @@
         </div>
         {% if board.is_active %}
         <div class="level-item">
-          <a class="button is-medium is-primary">Open board</a>
+          <a href="{% url 'suggestionslistview' id=board.id %}" class="button is-medium is-primary">Open board</a>
         </div>
         {% endif %}
       </div>

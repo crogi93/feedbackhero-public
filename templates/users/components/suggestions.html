@@ -3,18 +3,27 @@
   <nav class="level is-mobile">
     <div class="level-left">
       <div class="level-item">
-        <a href="{% url 'suggestionsdetailview'  id=suggestion.id %}"><h4 id="const" class="title is-3" style="font-family: Montserrat">{{ suggestion.title }}</h4></a>
+        <a href="{% url 'suggestionsdetailview' bid=board.id id=suggestion.id %}"><h4 id="const" class="title is-3" style="font-family: Montserrat">{{ suggestion.title }}</h4></a>
       </div>
       <div class="level-item has-text-centered">
+        {% if suggestion.status %}
         <div>
-          <button class="button is-rounded is-static">{{ suggestion.status.name }}</button>
+          <button class="button is-rounded is-static">
+            <span>{{ suggestion.status.name }}</span>
+            {% if suggestion.status.icon %}
+              <span class="icon">
+                <i class="{{ suggestion.status.get_icon_display }}"></i>
+              </span>
+            {% endif %}
+          </button>
         </div>
+        {% endif %}
       </div>
     </div>
     <div class="level-right">
       <div class="level-item has-text-centered">
         <div>
-          <a href={% url 'suggestionsdetailview'  id=suggestion.id %} class="button is-success">
+          <a href={% url 'suggestionsdetailview' bid=board.id id=suggestion.id %} class="button is-success">
             <span class="icon">
               <i class="fa-solid fa-thumbs-up"></i>
             </span>
@@ -43,7 +52,7 @@
         </div>
         <div class="message-body" >
           {{ suggestion.description }}
-        <a href="{% url 'suggestionsdetailview'  id=suggestion.id %}">
+        <a href="{% url 'suggestionsdetailview' bid=board.id id=suggestion.id %}">
           <p align="right">{{ suggestion.sum_comments }} comments</p>
         </a>
         </div>

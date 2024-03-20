@@ -2,7 +2,7 @@ import os
 import uuid
 
 from django.db import models
-
+from django.core.serializers.json import DjangoJSONEncoder
 from core.basemodels import IconField, TimestampMixin
 from customers.models import User
 
@@ -18,8 +18,14 @@ class Board(TimestampMixin):
     name = models.CharField(max_length=255, unique=True)
     logo = models.FileField(upload_to=upload_path, blank=True, null=True)
     description = models.TextField()
-    footer = models.JSONField(blank=True, null=True)
-
+    footer = models.JSONField(encoder=DjangoJSONEncoder, blank=True, null=True)
+    status_default = models.ForeignKey(
+        "Status",
+        related_name="board_default_status",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
     is_active = models.BooleanField(default=True)
 
     @property
@@ -31,17 +37,11 @@ class Status(TimestampMixin):
     name = models.CharField(max_length=255)
     board = models.ForeignKey(Board, related_name="status", on_delete=models.DO_NOTHING)
     icon = IconField(null=True, blank=True)
-    is_default = models.BooleanField(default=False, blank=True, null=True)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
                 fields=["board", "name"], name="unique_statusname_per_board"
-            ),
-            models.UniqueConstraint(
-                fields=["board", "is_default"],
-                condition=models.Q(is_default=True),
-                name="unique_default_status_per_board",
             ),
         ]
 
@@ -51,9 +51,7 @@ class Suggestion(TimestampMixin):
     title = models.CharField(max_length=255)
     description = models.TextField(max_length=1000)
     image = models.FileField(upload_to=upload_path, blank=True, null=True)
-    status = models.ForeignKey(
-        Status, on_delete=models.DO_NOTHING, blank=True, null=True
-    )
+    status = models.ForeignKey(Status, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         constraints = [

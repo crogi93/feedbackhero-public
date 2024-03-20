@@ -1,12 +1,12 @@
-{% extends "users/base_board_view.html" %}
+{% extends "users/components/base_board_view.html" %}
 {% load static %}
 
 {% block title %}Feedbackhero - {{ board.name }}{% endblock %}
 {% block content %}
 <section class="section">
   <div class="container">
-    {% include "users/notifications.html" %}
-    <form action="{% url 'suggestionscreateview' %}" method="POST" enctype="multipart/form-data">
+    {% include "users/components/notifications.html" %}
+    <form action="{% url 'suggestionscreateview' id=board.id %}" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <input type="hidden" id="board" name="board" value="{{ board.id }}">
       <div class="field is-horizontal">
@@ -105,7 +105,7 @@
               <div class="level-right">
                 <div class="level-item">
                   <div class="control">
-                    <a class="button is-danger" href="{% url 'suggestionslistview' %}">
+                    <a class="button is-danger" href="{% url 'suggestionslistview' id=board.id %}">
                       Cancel
                     </a>
                   </div>

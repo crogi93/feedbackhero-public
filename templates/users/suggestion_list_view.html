@@ -1,17 +1,17 @@
-{% extends "users/base_board_view.html" %}
+{% extends "users/components/base_board_view.html" %}
 {% load static %}
 
 {% block title %}Feedbackhero - {{ board.name }}{% endblock %}
 {% block content %}
 <section class="section">
   <div class="container">
-    {% include "users/notifications.html" %}
+    {% include "users/components/notifications.html" %}
     <div class="columns">
       <div class="column is-3">
         <aside class="is-medium menu">
-          <a class="button is-primary is-block is-alt is-large" href="{% url 'suggestionscreateview' %}">New Suggestion</a>
+          <a class="button is-primary is-block is-alt is-large" href="{% url 'suggestionscreateview' id=board.id %}">New Suggestion</a>
           <p class="menu-label">SEARCH</p>
-          <form action="{% url 'suggestionslistview' %}" method="GET">
+          <form action="{% url 'suggestionslistview' id=board.id %}" method="GET">
             <div class="field has-addons">
               <div class="control is-expanded">
                 <input class="input" type="text" placeholder="Find a suggestion..." name="title">
@@ -44,7 +44,7 @@
           </ul>
           <p class="menu-label">Filtr by STATUS</p>
           <ul class="menu-list">
-              <li><a href="{% url 'suggestionslistview' %}">All ({{ suggestions_count }})</a></li>
+              <li><a href="{% url 'suggestionslistview' id=board.id %}">All ({{ suggestions_count }})</a></li>
               {% for status in statuses %}
               <li><a href="{{ request.get_path }}?status__name={{ status.name }}">{{ status.name }} ({{ status.sum_suggestions }})</a></li>
               {% endfor %}
@@ -57,8 +57,8 @@
           <h3 class="title is-3">There is no feedbacks.</h3>
           {% else %}
           <h3 class="title is-3">Feedbacks</h3>
-          {% include "users/suggestions.html" %}
-          {% include "users/pagination.html" with objects=suggestions %}
+          {% include "users/components/suggestions.html" %}
+          {% include "users/components/pagination.html" with objects=suggestions %}
           {% endif %}
         </div>
       </div>

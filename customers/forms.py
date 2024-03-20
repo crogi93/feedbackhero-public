@@ -146,7 +146,7 @@ class ChangeEmailForm(forms.ModelForm):
 
 
 class CreateBoardForm(forms.ModelForm):
-    footer = forms.CharField(required=False)
+    footer = forms.JSONField(required=False)
 
     class Meta:
         model = Board

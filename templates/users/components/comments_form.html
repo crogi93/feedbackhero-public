@@ -2,7 +2,7 @@
   <div class="modal-background"></div>
   <div class="modal-content">
     <div class="box">
-      <form action="{% url 'suggestionsdetailview' id=suggestion.id %}" method="POST" enctype="multipart/form-data">
+      <form action="{% url 'suggestionsdetailview' bid=board.id id=suggestion.id %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="hidden" id="suggestion" name="suggestion" value="{{ suggestion.id }}">
         <div class="field is-normal">

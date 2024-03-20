@@ -11,7 +11,8 @@
             "logo": "tests/images/example_logo.jpg",
             "description": "This is description for example board 1.",
             "footer": "{'footer_text': 'This is footer text.', 'footer_extra': 'This is extra footer text.', 'contacts': {'twitter': 'www.twitter.com', 'instagram': 'www.instagram.com', 'email': None, 'discord': None, 'website': None}}",
-            "is_active": false
+            "is_active": false,
+            "status_default": null
         }
     },
     {
@@ -26,7 +27,8 @@
             "logo": "",
             "description": "This is description for example board 2.",
             "footer": "{'footer_text': 'This is footer text.', 'footer_extra': 'This is extra footer text.', 'contacts': {'twitter': 'www.twitter.com', 'instagram': None, 'email': None, 'discord': None, 'website': None}}",
-            "is_active": false
+            "is_active": false,
+            "status_default": null
         }
     }
 ]

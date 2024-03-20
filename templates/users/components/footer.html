@@ -7,12 +7,14 @@
           <div class="block">
             <a>
               <h1 class="title is-4 has-text-link">{{ board.name }}</h1>
-              <h2 class="subtitle is-5">Tu bedzie jakis fajny tekst klienta.</h2>
+              <h2 class="subtitle is-5">{{ board.footer.footer_text}}</h2>
             </a>
           </div>
+          {% if board.footer.footer_extra %}
           <div class="block">
-            <p>Feedbackhero on duty - keep your feedback under the full control in one place!</p>
+            <p>{{ board.footer.footer_extra }}</p>
           </div>
+          {% endif %}
           <div class="block">
             <a class="has-text-black">
               <span class="icon">
@@ -28,30 +30,37 @@
           <aside class="is-medium menu">
             <p class="menu-label">Contact with {{ board.name }}!</p>
             <ul class="menu-list">
+             {% if board.footer.contacts.website %}
               <li>
-                <a>
+                <a href="{{ board.footer.contacts.website }}">
                   <span class="icon">
                     <i class="fa-solid fa-globe"></i>
                   </span>
                   <span>Website</span>
                 </a>
               </li>
+              {% endif %}
+              {% if board.footer.contacts.discord %}
               <li>
-                <a>
+                <a href="{{ board.footer.contacts.discord }}">
                   <span class="icon">
                     <i class="fa-brands fa-discord"></i>
                   </span>
                   <span>Discord</span>
                 </a>
               </li>
+              {% endif %}
+              {% if board.footer.contacts.twitter %}
               <li>
-                <a>
+                <a href="{{ board.footer.contacts.twitter }}">
                   <span class="icon">
                     <i class="fa-brands fa-twitter"></i>
                   </span>
                   <span>Twitter</span>
                 </a>
               </li>
+              {% endif %}
+              {% if board.footer.contacts.instagram %}
               <li>
                 <a>
                   <span class="icon">
@@ -60,6 +69,17 @@
                   <span>Instagram</span>
                 </a>
               </li>
+              {% endif %}
+              {% if board.footer.contacts.email %}
+              <li>
+                <a href="{{ board.footer.contacts.email }}">
+                  <span class="icon">
+                    <i class="fa-envelope"></i>
+                  </span>
+                  <span>Email</span>
+                </a>
+              </li>
+              {% endif %}
             </ul>
           </aside>
         </div>
